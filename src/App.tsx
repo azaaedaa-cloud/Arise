@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ShoppingCart, Heart, User as UserIcon, Search, Menu, X, BookOpen, LogOut, LayoutDashboard } from 'lucide-react';
+import { ShoppingCart, Heart, User as UserIcon, Search, Menu, X, BookOpen, LogOut, LayoutDashboard, Sun, Moon, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster } from 'react-hot-toast';
 import { UserProfile } from './types';
+import { useAppContext } from './contexts/AppContext';
 
 // Pages
 import Home from './pages/Home';
@@ -62,6 +63,7 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
 };
 
 export default function App() {
+  const { theme, toggleTheme, language, setLanguage, t } = useAppContext();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,22 +125,38 @@ export default function App() {
         {/* Navigation */}
         <nav className="glass sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-              <BookOpen className="text-luxury-black" size={24} />
-            </div>
-            <span className="text-2xl font-bold tracking-tighter text-glow">ARAIZE</span>
+            <img src="/logo.png" alt="ARAIZE" className="h-10 w-auto transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/catalog" className="hover:text-gold transition-colors font-medium">Catalog</Link>
-            <Link to="/wishlist" className="hover:text-gold transition-colors font-medium">Wishlist</Link>
+            <Link to="/catalog" className="hover:text-gold transition-colors font-medium">{t('nav.catalog')}</Link>
+            <Link to="/wishlist" className="hover:text-gold transition-colors font-medium">{t('nav.wishlist')}</Link>
             <div className="relative group">
               <Search className="text-luxury-accent cursor-pointer hover:text-gold transition-colors" />
             </div>
           </div>
 
           <div className="flex items-center gap-4">
+            {/* Theme Toggle */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
+            {/* Language Toggle */}
+            <button 
+              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+              className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold flex items-center gap-1"
+              title={language === 'en' ? 'Switch to Arabic' : 'Switch to English'}
+            >
+              <Languages size={20} />
+              <span className="text-xs font-bold uppercase">{language === 'en' ? 'AR' : 'EN'}</span>
+            </button>
+
             <Link to="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition-colors">
               <ShoppingCart size={22} />
               {cartCount > 0 && (
@@ -181,16 +199,16 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="md:hidden glass absolute top-20 left-0 w-full p-6 z-40 flex flex-col gap-4"
             >
-              <Link to="/catalog" onClick={() => setIsMenuOpen(false)}>Catalog</Link>
-              <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>Wishlist</Link>
-              <Link to="/cart" onClick={() => setIsMenuOpen(false)}>Cart</Link>
+              <Link to="/catalog" onClick={() => setIsMenuOpen(false)}>{t('nav.catalog')}</Link>
+              <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>{t('nav.wishlist')}</Link>
+              <Link to="/cart" onClick={() => setIsMenuOpen(false)}>{t('nav.cart')}</Link>
               {user ? (
                 <>
-                  <Link to="/profile" onClick={() => setIsMenuOpen(false)}>Profile</Link>
-                  <button onClick={() => signOut(auth)} className="text-left text-red-500">Sign Out</button>
+                  <Link to="/profile" onClick={() => setIsMenuOpen(false)}>{t('nav.profile')}</Link>
+                  <button onClick={() => signOut(auth)} className="text-left text-red-500">{t('nav.signout')}</button>
                 </>
               ) : (
-                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>{t('nav.signin')}</Link>
               )}
             </motion.div>
           )}
@@ -219,34 +237,31 @@ export default function App() {
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-8 h-8 bg-gold rounded flex items-center justify-center">
-                  <BookOpen className="text-luxury-black" size={18} />
-                </div>
-                <span className="text-xl font-bold tracking-tighter">ARAIZE</span>
+                <img src="/logo.png" alt="ARAIZE" className="h-8 w-auto" />
               </div>
               <p className="text-luxury-accent max-w-md leading-relaxed">
-                The world's most exclusive digital and physical bookstore. Curated for the elite, powered by performance.
+                {t('footer.description')}
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-6 text-gold">Explore</h4>
+              <h4 className="font-bold mb-6 text-gold">{t('footer.explore')}</h4>
               <ul className="space-y-4 text-luxury-accent">
-                <li><Link to="/catalog" className="hover:text-white transition-colors">Catalog</Link></li>
-                <li><Link to="/catalog?category=Digital" className="hover:text-white transition-colors">Digital Books</Link></li>
-                <li><Link to="/catalog?category=Limited" className="hover:text-white transition-colors">Limited Editions</Link></li>
+                <li><Link to="/catalog" className="hover:text-white transition-colors">{t('nav.catalog')}</Link></li>
+                <li><Link to="/catalog?category=Digital" className="hover:text-white transition-colors">{t('footer.digital')}</Link></li>
+                <li><Link to="/catalog?category=Limited" className="hover:text-white transition-colors">{t('footer.limited')}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-6 text-gold">Support</h4>
+              <h4 className="font-bold mb-6 text-gold">{t('footer.support')}</h4>
               <ul className="space-y-4 text-luxury-accent">
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Shipping Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('footer.contact')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('footer.shipping')}</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">{t('footer.terms')}</a></li>
               </ul>
             </div>
           </div>
           <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center text-luxury-accent text-sm">
-            © 2026 Araize Platform. All rights reserved.
+            © 2026 Araize Platform. {t('footer.rights')}
           </div>
         </footer>
       </div>

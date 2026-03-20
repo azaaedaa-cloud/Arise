@@ -15,8 +15,7 @@
 
 @layer base {
   body {
-    @apply bg-luxury-black text-white font-sans antialiased;
-    background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #0a0a0a 100%);
+    @apply bg-white text-luxury-black dark:bg-luxury-black dark:text-white font-sans antialiased transition-colors duration-300;
     min-height: 100vh;
     overflow-x: hidden;
   }

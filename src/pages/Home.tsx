@@ -9,7 +9,10 @@ import { sounds, spawnEmoji } from '../utils/interactions';
 import toast from 'react-hot-toast';
 import confetti from 'canvas-confetti';
 
+import { useAppContext } from '../contexts/AppContext';
+
 export default function Home() {
+  const { t } = useAppContext();
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -68,7 +71,7 @@ export default function Home() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 text-xs font-bold tracking-widest uppercase"
           >
             <TrendingUp size={14} className="text-gold" />
-            The Journey Begins
+            {t('hero.cta1')}
           </motion.div>
           
           <motion.h1 
@@ -77,8 +80,8 @@ export default function Home() {
             transition={{ delay: 0.7, duration: 0.8 }}
             className="text-7xl md:text-9xl font-bold tracking-tighter mb-8 leading-[0.8]"
           >
-            FROM <span className="text-luxury-accent">ZERO</span> <br />
-            TO <span className="text-gold text-glow">POWER</span>
+            {t('hero.title1')} <span className="text-luxury-accent">{t('hero.title2')}</span> <br />
+            {t('hero.title3')} <span className="text-gold text-glow">{t('hero.title4')}</span>
           </motion.h1>
 
           <motion.p 
@@ -87,7 +90,7 @@ export default function Home() {
             transition={{ delay: 1, duration: 1 }}
             className="text-xl text-luxury-accent mb-12 max-w-2xl mx-auto leading-relaxed"
           >
-            Knowledge is the only bridge between where you are and where you belong. Start your ascent today.
+            {t('hero.subtitle')}
           </motion.p>
 
           <motion.div 
@@ -101,15 +104,15 @@ export default function Home() {
               onClick={(e) => handleInteraction(e as any, '📈')}
               className="btn-gold group flex items-center gap-2 w-full md:w-auto justify-center"
             >
-              Start Your Ascent
-              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+              {t('hero.cta1')}
+              <ArrowRight className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
             </Link>
             <Link 
               to="/catalog?tier=poverty" 
               onClick={(e) => handleInteraction(e as any, '✨')}
               className="btn-outline w-full md:w-auto justify-center"
             >
-              The Foundation
+              {t('hero.cta2')}
             </Link>
           </motion.div>
         </div>
@@ -122,21 +125,21 @@ export default function Home() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
         >
-          <div className="text-gold font-bold uppercase tracking-widest mb-4">Phase 01: Growth</div>
-          <h2 className="text-5xl font-bold tracking-tighter mb-8">BUILD THE <br /> <span className="text-gold">FOUNDATION</span></h2>
+          <div className="text-gold font-bold uppercase tracking-widest mb-4">Phase 01: {t('common.growth')}</div>
+          <h2 className="text-5xl font-bold tracking-tighter mb-8">{t('home.phase1.title')}</h2>
           <p className="text-luxury-accent text-lg leading-relaxed mb-12">
-            Every empire starts with a single thought. Our "Growth" collection provides the essential wisdom needed to break the cycle and start the climb.
+            {t('home.phase1.desc')}
           </p>
           <div className="grid grid-cols-2 gap-8">
             <div className="glass p-6 rounded-2xl">
               <Zap className="text-gold mb-4" size={24} />
-              <div className="font-bold mb-2">Mental Clarity</div>
-              <p className="text-xs text-luxury-accent">Sharpen your mind for the battles ahead.</p>
+              <div className="font-bold mb-2">{t('home.phase1.feature1.title')}</div>
+              <p className="text-xs text-luxury-accent">{t('home.phase1.feature1.desc')}</p>
             </div>
             <div className="glass p-6 rounded-2xl">
               <Shield className="text-gold mb-4" size={24} />
-              <div className="font-bold mb-2">Resilience</div>
-              <p className="text-xs text-luxury-accent">Develop the skin of a sovereign individual.</p>
+              <div className="font-bold mb-2">{t('home.phase1.feature2.title')}</div>
+              <p className="text-xs text-luxury-accent">{t('home.phase1.feature2.desc')}</p>
             </div>
           </div>
         </motion.div>
@@ -157,14 +160,14 @@ export default function Home() {
       {/* Tier 2: Wealth (The Accumulation) */}
       <section className="max-w-7xl mx-auto w-full px-6">
         <div className="text-center mb-20">
-          <div className="text-gold font-bold uppercase tracking-widest mb-4">Phase 02: Wealth</div>
-          <h2 className="text-6xl font-bold tracking-tighter">ACCUMULATE <span className="text-gold">ABUNDANCE</span></h2>
+          <div className="text-gold font-bold uppercase tracking-widest mb-4">Phase 02: {t('common.wealth')}</div>
+          <h2 className="text-6xl font-bold tracking-tighter">{t('home.phase2.title')}</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { title: "Financial Mastery", icon: DollarSign, desc: "The rules of money have changed. Learn the new game." },
-            { title: "Strategic Leverage", icon: Zap, desc: "Work smarter, not harder. Use the tools of the elite." },
-            { title: "Network Power", icon: Globe, desc: "Your network is your net worth. Connect with the best." },
+            { title: t('home.phase2.feature1.title'), icon: DollarSign, desc: t('home.phase2.feature1.desc') },
+            { title: t('home.phase2.feature2.title'), icon: Zap, desc: t('home.phase2.feature2.desc') },
+            { title: t('home.phase2.feature3.title'), icon: Globe, desc: t('home.phase2.feature3.desc') },
           ].map((item, i) => (
             <motion.div 
               key={i}
@@ -193,16 +196,16 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <Crown className="mx-auto mb-8 text-gold" size={80} />
-            <h2 className="text-7xl md:text-9xl font-bold tracking-tighter mb-8">ULTIMATE <span className="text-gold text-glow">POWER</span></h2>
+            <h2 className="text-7xl md:text-9xl font-bold tracking-tighter mb-8">{t('home.phase3.title')} <span className="text-gold text-glow">{t('common.power')}</span></h2>
             <p className="text-2xl text-luxury-accent max-w-3xl mx-auto leading-relaxed mb-12">
-              The final stage of the journey. Sovereignty, legacy, and total control over your destiny.
+              {t('home.phase3.desc')}
             </p>
             <Link 
               to="/catalog?tier=power" 
               onClick={(e) => handleInteraction(e as any, '✨')}
               className="btn-gold px-16 py-5 text-lg"
             >
-              Enter the Inner Circle
+              {t('home.phase3.cta')}
             </Link>
           </motion.div>
         </div>
@@ -212,11 +215,11 @@ export default function Home() {
       <section className="max-w-7xl mx-auto w-full px-6 mb-40">
         <div className="flex items-end justify-between mb-12">
           <div>
-            <h2 className="text-4xl font-bold tracking-tighter mb-4">ELITE <span className="text-gold">SELECTIONS</span></h2>
-            <p className="text-luxury-accent">Masterpieces curated for your current stage of growth.</p>
+            <h2 className="text-4xl font-bold tracking-tighter mb-4">{t('common.elite')} <span className="text-gold">{t('common.selections')}</span></h2>
+            <p className="text-luxury-accent">{t('home.featured.desc')}</p>
           </div>
           <Link to="/catalog" className="hidden md:flex items-center gap-2 text-gold font-bold hover:underline">
-            View Full Catalog <ArrowRight size={18} />
+            {t('common.viewall')} <ArrowRight size={18} className="rtl:rotate-180" />
           </Link>
         </div>
 
@@ -248,7 +251,7 @@ export default function Home() {
                     }}
                     className="btn-gold w-full text-center py-3 text-sm glass group-hover:translate-y-0 translate-y-4 transition-all duration-500"
                   >
-                    Quick View
+                    {t('common.quickview')}
                   </button>
                 </div>
                 <div className="absolute top-4 left-4 glass-gold px-3 py-1 rounded-full text-[10px] font-bold text-gold uppercase tracking-widest">
@@ -309,10 +312,10 @@ export default function Home() {
                   <div className="mb-8">
                     <div className="flex items-center gap-2 text-gold mb-4">
                       <Star size={16} fill="currentColor" />
-                      <span className="font-bold tracking-widest text-xs uppercase">{selectedBook.rating} Masterpiece Rating</span>
+                      <span className="font-bold tracking-widest text-xs uppercase">{selectedBook.rating} {t('common.rating')}</span>
                     </div>
                     <h2 className="text-5xl font-bold tracking-tighter mb-4">{selectedBook.title}</h2>
-                    <p className="text-xl text-luxury-accent italic">by {selectedBook.author}</p>
+                    <p className="text-xl text-luxury-accent italic">{t('common.by')} {selectedBook.author}</p>
                   </div>
 
                   <p className="text-luxury-accent leading-relaxed mb-12 line-clamp-4">
@@ -321,12 +324,12 @@ export default function Home() {
 
                   <div className="flex items-center justify-between mb-12 p-6 glass rounded-2xl border-white/5">
                     <div>
-                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">Investment</div>
+                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">{t('common.investment')}</div>
                       <div className="text-4xl font-bold text-gold">${selectedBook.price}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">Availability</div>
-                      <div className="text-lg font-bold">{selectedBook.stock > 0 ? 'In Stock' : 'Exclusive Waitlist'}</div>
+                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">{t('common.availability')}</div>
+                      <div className="text-lg font-bold">{selectedBook.stock > 0 ? t('common.instock') : t('common.waitlist')}</div>
                     </div>
                   </div>
 
@@ -335,11 +338,11 @@ export default function Home() {
                       to={`/book/${selectedBook.id}`}
                       className="btn-gold flex-1 py-4 text-center font-bold tracking-widest uppercase text-sm"
                     >
-                      View Full Details
+                      {t('common.details')}
                     </Link>
                     <button className="btn-outline flex-1 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2">
                       <ShoppingCart size={18} />
-                      Add to Vault
+                      {t('common.addvault')}
                     </button>
                   </div>
                 </div>
