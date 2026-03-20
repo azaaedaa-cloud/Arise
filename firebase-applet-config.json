@@ -1,10 +1,10 @@
 {
-  "projectId": "gen-lang-client-0772075326",
-  "appId": "1:631347972780:web:4c0e9fc4e01aad123f2d09",
-  "apiKey": "AIzaSyC8xdGaTq5-cY1E6gBGi2sloOoFxfve-T0",
-  "authDomain": "gen-lang-client-0772075326.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-e24ce974-529f-42f8-b8af-411029801d75",
-  "storageBucket": "gen-lang-client-0772075326.firebasestorage.app",
-  "messagingSenderId": "631347972780",
-  "measurementId": ""
+  "projectId": "luxebooks-480a3",
+  "appId": "1:1007841408636:web:1f7109b07b4c72a647bbf9",
+  "apiKey": "AIzaSyDuWoCw-ot6bo1zcqtH02VCPrPzwG1e90E",
+  "authDomain": "luxebooks-480a3.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "luxebooks-480a3.firebasestorage.app",
+  "messagingSenderId": "1007841408636",
+  "measurementId": "G-6J99XVG6CW"
 }

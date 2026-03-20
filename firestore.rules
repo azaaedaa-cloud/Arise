@@ -12,26 +12,35 @@ service cloud.firestore {
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
+
+    // Centralized function to get current user data
+    function currentUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
     
     function isSuperAdmin() {
-      return isAuthenticated() && 
-        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin' ||
-         (request.auth.token.email == "azaaedaa@gmail.com" && request.auth.token.email_verified == true));
+      return isAuthenticated() && (
+        (request.auth.token.email == "azaaedaa@gmail.com" && request.auth.token.email_verified == true) ||
+        currentUserData().role == 'super_admin'
+      );
     }
 
     function isAdmin() {
-      return isAuthenticated() && 
-        (isSuperAdmin() || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      return isAuthenticated() && (isSuperAdmin() || currentUserData().role == 'admin');
     }
 
     function hasPermission(permission) {
+      let user = currentUserData();
+      let role = user.role;
+      let perms = user.permissions;
+      
       return isAuthenticated() && (
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-        (permission == 'manageProducts' && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'editor' || (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions.manageProducts == true))) ||
-        (permission == 'manageOrders' && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'editor' || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'support' || (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions.manageOrders == true))) ||
-        (permission == 'manageUsers' && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions.manageUsers == true)) ||
-        (permission == 'viewAnalytics' && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'editor' || (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.permissions.viewAnalytics == true)))
+        role == 'super_admin' || 
+        role == 'admin' ||
+        (permission == 'manageProducts' && (role == 'editor' || (perms != null && perms.manageProducts == true))) ||
+        (permission == 'manageOrders' && (role == 'editor' || role == 'support' || (perms != null && perms.manageOrders == true))) ||
+        (permission == 'manageUsers' && (perms != null && perms.manageUsers == true)) ||
+        (permission == 'viewAnalytics' && (role == 'editor' || (perms != null && perms.viewAnalytics == true)))
       );
     }
 
