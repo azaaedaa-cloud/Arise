@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import Catalog from './pages/Catalog';
 import BookDetails from './pages/BookDetails';
 import Cart from './pages/Cart';
+import Success from './pages/Success';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Auth from './pages/Auth';
@@ -71,22 +72,28 @@ export default function App() {
       setUser(firebaseUser);
       if (firebaseUser) {
         const docRef = doc(db, 'users', firebaseUser.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProfile(docSnap.data() as UserProfile);
-        } else {
-          // Create profile if it doesn't exist
-          const newProfile: UserProfile = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            displayName: firebaseUser.displayName || 'Guest',
-            role: firebaseUser.email === 'azaaedaa@gmail.com' ? 'super_admin' : 'user',
-            createdAt: new Date().toISOString(),
-            wishlist: [],
-            purchasedBooks: []
-          };
-          await setDoc(docRef, newProfile);
-          setProfile(newProfile);
+        try {
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setProfile(docSnap.data() as UserProfile);
+          } else {
+            // Create profile if it doesn't exist
+            const newProfile: UserProfile = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              displayName: firebaseUser.displayName || 'Guest',
+              role: firebaseUser.email === 'azaaedaa@gmail.com' ? 'super_admin' : 'user',
+              createdAt: new Date().toISOString(),
+              wishlist: [],
+              purchasedBooks: []
+            };
+            await setDoc(docRef, newProfile);
+            setProfile(newProfile);
+          }
+        } catch (error: any) {
+          console.error("Firestore Auth Error:", error);
+          // If it's a permission error, it might be because the user is new and rules are strict
+          // But for 'users' collection, owners should have access
         }
       } else {
         setProfile(null);
@@ -195,6 +202,7 @@ export default function App() {
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/book/:id" element={<BookDetails />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/success" element={<Success />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={
               <ProtectedRoute role="admin">

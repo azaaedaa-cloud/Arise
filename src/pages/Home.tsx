@@ -1,15 +1,19 @@
-import { motion, useScroll, useTransform } from 'motion/react';
-import { ShoppingCart, Heart, ArrowRight, Star, BookOpen, Shield, Zap, Globe, TrendingUp, DollarSign, Crown } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { ShoppingCart, Heart, ArrowRight, Star, BookOpen, Shield, Zap, Globe, TrendingUp, DollarSign, Crown, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { collection, query, limit, getDocs, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Book } from '../types';
 import { sounds, spawnEmoji } from '../utils/interactions';
+import toast from 'react-hot-toast';
+import confetti from 'canvas-confetti';
 
 export default function Home() {
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -237,13 +241,15 @@ export default function Home() {
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                  <Link 
-                    to={`/book/${book.id}`} 
-                    onClick={(e) => handleInteraction(e as any, '📖')}
-                    className="btn-gold w-full text-center py-3 text-sm"
+                  <button 
+                    onClick={(e) => {
+                      handleInteraction(e as any, '📖');
+                      setSelectedBook(book);
+                    }}
+                    className="btn-gold w-full text-center py-3 text-sm glass group-hover:translate-y-0 translate-y-4 transition-all duration-500"
                   >
                     Quick View
-                  </Link>
+                  </button>
                 </div>
                 <div className="absolute top-4 left-4 glass-gold px-3 py-1 rounded-full text-[10px] font-bold text-gold uppercase tracking-widest">
                   {book.tier || 'Growth'}
@@ -262,6 +268,86 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* Quick View Modal */}
+      <AnimatePresence>
+        {selectedBook && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedBook(null)}
+              className="absolute inset-0 bg-luxury-black/90 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-5xl glass rounded-[3rem] overflow-hidden border-gold/20 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
+            >
+              <button 
+                onClick={() => setSelectedBook(null)}
+                className="absolute top-8 right-8 p-3 glass rounded-full hover:bg-white/10 transition-colors z-50"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="aspect-[3/4] relative">
+                  <img 
+                    src={selectedBook.coverImage || `https://picsum.photos/seed/${selectedBook.id}/800/1200`} 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute top-8 left-8 glass-gold px-4 py-2 rounded-full text-xs font-bold text-gold uppercase tracking-widest">
+                    {selectedBook.tier || 'Growth'}
+                  </div>
+                </div>
+                
+                <div className="p-12 md:p-16 flex flex-col justify-center">
+                  <div className="mb-8">
+                    <div className="flex items-center gap-2 text-gold mb-4">
+                      <Star size={16} fill="currentColor" />
+                      <span className="font-bold tracking-widest text-xs uppercase">{selectedBook.rating} Masterpiece Rating</span>
+                    </div>
+                    <h2 className="text-5xl font-bold tracking-tighter mb-4">{selectedBook.title}</h2>
+                    <p className="text-xl text-luxury-accent italic">by {selectedBook.author}</p>
+                  </div>
+
+                  <p className="text-luxury-accent leading-relaxed mb-12 line-clamp-4">
+                    {selectedBook.description}
+                  </p>
+
+                  <div className="flex items-center justify-between mb-12 p-6 glass rounded-2xl border-white/5">
+                    <div>
+                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">Investment</div>
+                      <div className="text-4xl font-bold text-gold">${selectedBook.price}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-luxury-accent uppercase tracking-widest font-bold mb-1">Availability</div>
+                      <div className="text-lg font-bold">{selectedBook.stock > 0 ? 'In Stock' : 'Exclusive Waitlist'}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link 
+                      to={`/book/${selectedBook.id}`}
+                      className="btn-gold flex-1 py-4 text-center font-bold tracking-widest uppercase text-sm"
+                    >
+                      View Full Details
+                    </Link>
+                    <button className="btn-outline flex-1 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2">
+                      <ShoppingCart size={18} />
+                      Add to Vault
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

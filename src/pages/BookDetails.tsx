@@ -1,9 +1,9 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Book, Review } from '../types';
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
 import { Star, ShoppingCart, Heart, Share2, Shield, Zap, Globe, ArrowLeft, Send } from 'lucide-react';
 
 export default function BookDetails() {
@@ -14,6 +14,9 @@ export default function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 1000], [0, 150]);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -111,9 +114,10 @@ export default function BookDetails() {
           animate={{ opacity: 1, x: 0 }}
           className="relative aspect-[3/4] rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
         >
-          <img 
+          <motion.img 
+            style={{ y }}
             src={book.coverImage || `https://picsum.photos/seed/${book.id}/800/1200`} 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover scale-110"
             referrerPolicy="no-referrer"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-luxury-black/80 via-transparent to-transparent" />

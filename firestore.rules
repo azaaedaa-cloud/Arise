@@ -40,8 +40,8 @@ service cloud.firestore {
       let allowedRoles = ['super_admin', 'admin', 'editor', 'support', 'user'];
       let allowedRole = isSpecialEmail ? data.role in allowedRoles : data.role == 'user';
       return data.keys().hasAll(['uid', 'email', 'role']) &&
-             data.uid is string &&
-             data.email is string &&
+             data.uid == request.auth.uid &&
+             data.email == request.auth.token.email &&
              allowedRole;
     }
 

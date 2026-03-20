@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc, onSnapshot } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { Book, UserProfile, Order, OrderItem } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
@@ -56,9 +56,26 @@ export default function AdminDashboard() {
         if (role !== 'user') {
           setUserRole(role);
           setUserPermissions(perms);
-          fetchBooks();
-          fetchOrders();
-          fetchUsers();
+          
+          // Real-time listeners
+          const unsubBooks = onSnapshot(query(collection(db, 'books'), orderBy('title')), (snapshot) => {
+            setBooks(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)));
+            setLoading(false);
+          });
+
+          const unsubUsers = onSnapshot(collection(db, 'users'), (snapshot) => {
+            setUsers(snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile)));
+          });
+
+          const unsubOrders = onSnapshot(query(collection(db, 'orders'), orderBy('createdAt', 'desc')), (snapshot) => {
+            setOrders(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)));
+          });
+
+          return () => {
+            unsubBooks();
+            unsubUsers();
+            unsubOrders();
+          };
         } else {
           navigate('/');
         }
@@ -69,42 +86,9 @@ export default function AdminDashboard() {
     checkAdmin();
   }, [navigate]);
 
-  const fetchBooks = async () => {
-    setLoading(true);
-    try {
-      const q = query(collection(db, 'books'), orderBy('title'));
-      const querySnapshot = await getDocs(q);
-      setBooks(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)));
-    } catch (error) {
-      console.error("Error fetching books:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'users'));
-      setUsers(querySnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as UserProfile)));
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchOrders = async () => {
-    try {
-      const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      setOrders(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order)));
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
-
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
-      fetchOrders();
       sounds.success.play();
       toast.success(`Order status updated to ${newStatus}`);
     } catch (error) {
@@ -123,7 +107,6 @@ export default function AdminDashboard() {
           await updateDoc(userRef, {
             purchasedBooks: [...currentPurchased, bookId]
           });
-          fetchUsers();
           sounds.success.play();
           confetti({ colors: ['#D4AF37'] });
           toast.success("Access granted successfully");
@@ -141,29 +124,30 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       if (editingId) {
+        // تعديل منتج موجود (تغيير سعر، غلاف، الخ)
         await updateDoc(doc(db, 'books', editingId), formData);
-        toast.success("Masterpiece updated");
+        toast.success("تم تحديث بيانات المنتج (السعر/الغلاف/إلخ)");
       } else {
+        // إضافة منتج جديد كلياً
         await addDoc(collection(db, 'books'), {
           ...formData,
           rating: 5,
-          reviewCount: 0
+          reviewCount: 0,
+          createdAt: new Date().toISOString()
         });
-        toast.success("New masterpiece added to collection");
+        toast.success("تمت إضافة المنتج الجديد بنجاح");
       }
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#D4AF37', '#ffffff']
-      });
+      
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#D4AF37', '#ffffff'] });
       sounds.success.play();
+      
+      // إغلاق النموذج وتفريغ البيانات
       setIsAdding(false);
       setEditingId(null);
-      setFormData({ title: '', author: '', description: '', price: 0, category: 'Fiction', stock: 10, isDigital: false, tier: 'growth' });
-      fetchBooks();
+      setFormData({ title: '', author: '', description: '', price: 0, category: 'Fiction', stock: 10, isDigital: false, tier: 'growth', coverImage: '' });
     } catch (error) {
       console.error("Error saving book:", error);
+      toast.error("حدث خطأ أثناء حفظ المنتج");
     }
   };
 
@@ -171,7 +155,6 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to delete this masterpiece?")) return;
     try {
       await deleteDoc(doc(db, 'books', id));
-      fetchBooks();
       toast.success("Masterpiece removed from collection");
     } catch (error) {
       console.error("Error deleting book:", error);
@@ -181,27 +164,30 @@ export default function AdminDashboard() {
 
   const handleDeleteUser = async (uid: string) => {
     if (uid === auth.currentUser?.uid) {
-      toast.error("You cannot delete your own account from here.");
+      toast.error("لا يمكنك حذف حسابك الشخصي من هنا.");
       return;
     }
-    if (!window.confirm("Are you sure you want to remove this user? This will delete their profile data.")) return;
+    
+    if (!window.confirm("هل أنت متأكد من حذف هذا المستخدم نهائياً؟ سيتم مسح كل بياناته.")) return;
     
     try {
       await deleteDoc(doc(db, 'users', uid));
-      fetchUsers();
-      toast.success("User removed successfully");
+      toast.success("تم إزالة المستخدم تماماً");
       sounds.success.play();
     } catch (error) {
       console.error("Error deleting user:", error);
-      toast.error("Failed to remove user");
+      toast.error("فشل في إزالة المستخدم");
     }
   };
 
   const handleUpdateUserRole = async (uid: string, newRole: UserRole) => {
-    if (userRole !== 'super_admin') return;
+    if (!hasAccess('manageUsers')) return;
+    if (newRole === 'super_admin' && userRole !== 'super_admin') {
+      toast.error("Only Super Admins can promote to Super Admin");
+      return;
+    }
     try {
       await updateDoc(doc(db, 'users', uid), { role: newRole });
-      fetchUsers();
       sounds.success.play();
       toast.success(`User role updated to ${newRole}`);
     } catch (error) {
@@ -211,7 +197,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateUserPermissions = async (uid: string, perms: Partial<UserPermissions>) => {
-    if (userRole !== 'super_admin') return;
+    if (!hasAccess('manageUsers')) return;
     try {
       const userRef = doc(db, 'users', uid);
       const userSnap = await getDoc(userRef);
@@ -223,7 +209,6 @@ export default function AdminDashboard() {
           viewAnalytics: false
         };
         await updateDoc(userRef, { permissions: { ...currentPerms, ...perms } });
-        fetchUsers();
         sounds.success.play();
         toast.success("Permissions updated");
       }
@@ -340,7 +325,6 @@ export default function AdminDashboard() {
     for (const book of sampleBooks) {
       await addDoc(collection(db, 'books'), book);
     }
-    fetchBooks();
     sounds.success.play();
     confetti({ colors: ['#D4AF37'] });
   };
@@ -382,7 +366,7 @@ export default function AdminDashboard() {
             >
               Products
             </button>
-            {userRole === 'super_admin' && (
+            {hasAccess('manageUsers') && (
               <button 
                 onClick={() => setActiveTab('users')}
                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'users' ? 'bg-gold text-luxury-black' : 'text-luxury-accent hover:text-white'}`}
@@ -582,7 +566,7 @@ export default function AdminDashboard() {
                           value={user.role}
                           onChange={(e) => handleUpdateUserRole(user.uid, e.target.value as UserRole)}
                           className="bg-transparent text-gold font-bold text-xs uppercase outline-none cursor-pointer"
-                          disabled={user.uid === auth.currentUser?.uid || userRole !== 'super_admin'}
+                          disabled={user.uid === auth.currentUser?.uid || !hasAccess('manageUsers')}
                         >
                           <option value="user">User</option>
                           <option value="support">Support</option>
@@ -591,7 +575,7 @@ export default function AdminDashboard() {
                           <option value="super_admin">Super Admin</option>
                         </select>
                         
-                        {user.role !== 'super_admin' && user.role !== 'user' && userRole === 'super_admin' && (
+                        {user.role !== 'super_admin' && user.role !== 'user' && hasAccess('manageUsers') && (
                           <div className="flex flex-wrap gap-2">
                             {[
                               { id: 'manageProducts', label: 'Products' },
@@ -624,9 +608,9 @@ export default function AdminDashboard() {
                           <button 
                             onClick={() => handleDeleteUser(user.uid)}
                             className="p-3 glass rounded-xl hover:text-red-500 transition-colors"
-                            title="Remove User"
+                            title="إزالة المستخدم تماماً"
                           >
-                            <ShieldAlert size={18} />
+                            <Trash2 size={18} />
                           </button>
                         )}
                       </div>

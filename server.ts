@@ -81,6 +81,45 @@ async function startServer() {
     }
   });
 
+  // Stripe Checkout Session
+  app.post("/api/create-checkout-session", async (req, res) => {
+    try {
+      const { items, success_url, cancel_url, userId } = req.body;
+
+      const line_items = items.map((item: any) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.title,
+            images: [item.coverImage],
+            metadata: {
+              bookId: item.bookId,
+            },
+          },
+          unit_amount: Math.round(item.price * 100),
+        },
+        quantity: item.quantity,
+      }));
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items,
+        mode: "payment",
+        success_url: `${success_url}?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url,
+        metadata: {
+          userId,
+          items: JSON.stringify(items.map((i: any) => ({ bookId: i.bookId, quantity: i.quantity }))),
+        },
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Stripe Error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Admin Routes
   app.get("/api/admin/stats", authenticate(["admin", "super_admin"]), (req, res) => {
     res.json({ revenue: 125000, users: 1240, orders: 48 });

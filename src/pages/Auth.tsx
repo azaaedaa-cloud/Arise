@@ -37,9 +37,10 @@ export default function Auth() {
           uid: userCredential.user.uid,
           email,
           displayName,
-          role: 'customer',
+          role: 'user',
           createdAt: new Date().toISOString(),
-          wishlist: []
+          wishlist: [],
+          purchasedBooks: []
         });
       }
       navigate('/');
@@ -52,24 +53,26 @@ export default function Auth() {
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    setError('');
+    setLoading(true);
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      
-      // Check if user profile exists, if not create it
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        role: 'customer',
-        createdAt: new Date().toISOString(),
-        wishlist: []
-      }, { merge: true });
-      
+      await signInWithPopup(auth, provider);
+      // Navigation and profile creation are handled by App.tsx onAuthStateChanged
       navigate('/');
     } catch (err: any) {
-      setError(err.message);
+      console.error("Google Sign In Error:", err);
+      if (err.code === 'auth/popup-blocked') {
+        setError('The login popup was blocked by your browser. Please allow popups for this site.');
+      } else if (err.code === 'auth/operation-not-allowed') {
+        setError('Google login is not enabled in the Firebase Console. Please enable it under Authentication > Sign-in method.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for Google login. Please add it to the "Authorized domains" list in the Firebase Console.');
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 

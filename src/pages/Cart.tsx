@@ -48,36 +48,24 @@ export default function Cart() {
     
     setLoading(true);
     try {
-      // 1. Create Payment Intent via our backend
-      const response = await fetch('/api/create-payment-intent', {
+      const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: total, items: cartItems })
+        body: JSON.stringify({ 
+          items: cartItems,
+          userId: auth.currentUser.uid,
+          success_url: `${window.location.origin}/success`,
+          cancel_url: `${window.location.origin}/cart`
+        })
       });
       
-      const { clientSecret } = await response.json();
+      const { url, error } = await response.json();
       
-      if (!clientSecret) throw new Error("Failed to create payment intent");
+      if (error) throw new Error(error);
+      if (!url) throw new Error("Failed to create checkout session");
 
-      // In a real app, we would use Stripe Elements here.
-      // For this demo, we'll simulate a successful payment and create the order.
-      
-      const orderData = {
-        userId: auth.currentUser.uid,
-        items: cartItems,
-        totalAmount: total,
-        status: 'paid',
-        createdAt: new Date().toISOString()
-      };
-      
-      await addDoc(collection(db, 'orders'), orderData);
-      
-      // Clear cart
-      localStorage.removeItem('luxe_cart');
-      setCartItems([]);
-      
-      alert("Elite purchase successful! Your order is being prepared.");
-      navigate('/profile');
+      // Redirect to Stripe Checkout
+      window.location.href = url;
     } catch (error) {
       console.error("Checkout Error:", error);
       alert("Elite transaction failed. Please try again.");
