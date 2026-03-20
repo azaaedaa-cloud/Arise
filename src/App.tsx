@@ -68,6 +68,7 @@ export default function App() {
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
+    document.title = 'Araize';
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
