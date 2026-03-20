@@ -1,10 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { ShoppingCart, Heart, User as UserIcon, Search, Menu, X, BookOpen, LogOut, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Toaster } from 'react-hot-toast';
 import { UserProfile } from './types';
 
 // Pages
@@ -15,6 +16,49 @@ import Cart from './pages/Cart';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import Auth from './pages/Auth';
+
+// Protected Route Component
+const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: string }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const docRef = doc(db, 'users', firebaseUser.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfile(docSnap.data() as UserProfile);
+        }
+        setUser(firebaseUser);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-luxury-black">
+        <div className="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (role && profile?.role !== role && profile?.role !== 'super_admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+};
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +98,20 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+        <Toaster position="top-right" toastOptions={{
+          style: {
+            background: '#1a1a1a',
+            color: '#fff',
+            border: '1px solid rgba(212, 175, 55, 0.2)',
+            borderRadius: '12px',
+          },
+          success: {
+            iconTheme: {
+              primary: '#D4AF37',
+              secondary: '#1a1a1a',
+            },
+          },
+        }} />
         {/* Navigation */}
         <nav className="glass sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
@@ -84,7 +142,7 @@ export default function App() {
             
             {user ? (
               <div className="flex items-center gap-4">
-                {(profile?.role === 'admin' || profile?.role === 'super_admin') && (
+                {(profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'editor' || profile?.role === 'support') && (
                   <Link to="/admin" className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold">
                     <LayoutDashboard size={22} />
                   </Link>
@@ -138,7 +196,11 @@ export default function App() {
             <Route path="/book/:id" element={<BookDetails />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin" element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
             <Route path="/auth" element={<Auth />} />
           </Routes>
         </main>

@@ -5,6 +5,7 @@ import { Book, UserProfile, Order, OrderItem } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Edit2, Trash2, Save, X, BookOpen, LayoutDashboard, Users, ShoppingBag, BarChart3, Star, Crown, ShieldAlert, TrendingUp, Search, Filter, AlertTriangle, Check, ChevronDown } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
+import { toast } from 'react-hot-toast';
 import { UserRole, UserPermissions } from '../types';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
@@ -105,8 +106,10 @@ export default function AdminDashboard() {
       await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
       fetchOrders();
       sounds.success.play();
+      toast.success(`Order status updated to ${newStatus}`);
     } catch (error) {
       console.error("Error updating order status:", error);
+      toast.error("Failed to update order status");
     }
   };
 
@@ -123,10 +126,14 @@ export default function AdminDashboard() {
           fetchUsers();
           sounds.success.play();
           confetti({ colors: ['#D4AF37'] });
+          toast.success("Access granted successfully");
+        } else {
+          toast.error("User already has access to this masterpiece");
         }
       }
     } catch (error) {
       console.error("Error granting access:", error);
+      toast.error("Failed to grant access");
     }
   };
 
@@ -135,12 +142,14 @@ export default function AdminDashboard() {
     try {
       if (editingId) {
         await updateDoc(doc(db, 'books', editingId), formData);
+        toast.success("Masterpiece updated");
       } else {
         await addDoc(collection(db, 'books'), {
           ...formData,
           rating: 5,
           reviewCount: 0
         });
+        toast.success("New masterpiece added to collection");
       }
       confetti({
         particleCount: 100,
@@ -163,8 +172,28 @@ export default function AdminDashboard() {
     try {
       await deleteDoc(doc(db, 'books', id));
       fetchBooks();
+      toast.success("Masterpiece removed from collection");
     } catch (error) {
       console.error("Error deleting book:", error);
+      toast.error("Failed to delete masterpiece");
+    }
+  };
+
+  const handleDeleteUser = async (uid: string) => {
+    if (uid === auth.currentUser?.uid) {
+      toast.error("You cannot delete your own account from here.");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to remove this user? This will delete their profile data.")) return;
+    
+    try {
+      await deleteDoc(doc(db, 'users', uid));
+      fetchUsers();
+      toast.success("User removed successfully");
+      sounds.success.play();
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Failed to remove user");
     }
   };
 
@@ -174,8 +203,10 @@ export default function AdminDashboard() {
       await updateDoc(doc(db, 'users', uid), { role: newRole });
       fetchUsers();
       sounds.success.play();
+      toast.success(`User role updated to ${newRole}`);
     } catch (error) {
       console.error("Error updating user role:", error);
+      toast.error("Failed to update user role");
     }
   };
 
@@ -194,9 +225,11 @@ export default function AdminDashboard() {
         await updateDoc(userRef, { permissions: { ...currentPerms, ...perms } });
         fetchUsers();
         sounds.success.play();
+        toast.success("Permissions updated");
       }
     } catch (error) {
       console.error("Error updating permissions:", error);
+      toast.error("Failed to update permissions");
     }
   };
 
@@ -210,30 +243,48 @@ export default function AdminDashboard() {
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const analyticsData = {
-    sales: [
-      { name: 'Mon', amount: 1200 },
-      { name: 'Tue', amount: 1900 },
-      { name: 'Wed', amount: 1500 },
-      { name: 'Thu', amount: 2200 },
-      { name: 'Fri', amount: 3100 },
-      { name: 'Sat', amount: 2800 },
-      { name: 'Sun', amount: 3500 },
-    ],
-    growth: [
-      { name: 'Jan', users: 400 },
-      { name: 'Feb', users: 800 },
-      { name: 'Mar', users: 1200 },
-      { name: 'Apr', users: 1900 },
-      { name: 'May', users: 2800 },
-    ],
-    categories: [
-      { name: 'Philosophy', value: 400 },
-      { name: 'Business', value: 300 },
-      { name: 'Wealth', value: 300 },
-      { name: 'Power', value: 200 },
-    ]
+  const getAnalyticsData = () => {
+    // Sales Trends (last 7 days)
+    const last7Days = [...Array(7)].map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      return d.toLocaleDateString('en-US', { weekday: 'short' });
+    }).reverse();
+
+    const salesByDay = last7Days.map(day => {
+      const amount = orders
+        .filter(o => new Date(o.createdAt).toLocaleDateString('en-US', { weekday: 'short' }) === day)
+        .reduce((sum, o) => sum + o.totalAmount, 0);
+      return { name: day, amount };
+    });
+
+    // User Growth (last 5 months)
+    const last5Months = [...Array(5)].map((_, i) => {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      return d.toLocaleDateString('en-US', { month: 'short' });
+    }).reverse();
+
+    const growthByMonth = last5Months.map(month => {
+      const count = users.filter(u => new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short' }) === month).length;
+      return { name: month, users: count };
+    });
+
+    // Category Distribution
+    const categoryCounts: Record<string, number> = {};
+    books.forEach(book => {
+      categoryCounts[book.category] = (categoryCounts[book.category] || 0) + 1;
+    });
+    const categories = Object.entries(categoryCounts).map(([name, value]) => ({ name, value }));
+
+    return {
+      sales: salesByDay,
+      growth: growthByMonth,
+      categories: categories.length > 0 ? categories : [{ name: 'None', value: 1 }]
+    };
   };
+
+  const analytics = getAnalyticsData();
 
   const COLORS = ['#D4AF37', '#E5E7EB', '#9CA3AF', '#4B5563'];
 
@@ -313,6 +364,17 @@ export default function AdminDashboard() {
         
         <div className="flex items-center gap-4">
           <button onClick={seedData} className="btn-outline py-2 px-4 text-xs">Seed Sample Data</button>
+          <button 
+            onClick={() => {
+              const url = `${window.location.origin}/auth`;
+              navigator.clipboard.writeText(url);
+              toast.success("Registration link copied. Ask the new admin to sign up, then promote them here.");
+            }}
+            className="btn-outline py-2 px-4 text-xs flex items-center gap-2"
+          >
+            <Plus size={14} />
+            Invite Admin
+          </button>
           <div className="glass p-1 rounded-xl flex">
             <button 
               onClick={() => setActiveTab('products')}
@@ -559,7 +621,13 @@ export default function AdminDashboard() {
                           </button>
                         )}
                         {user.uid !== auth.currentUser?.uid && userRole === 'super_admin' && (
-                          <button className="p-3 glass rounded-xl hover:text-red-500 transition-colors"><ShieldAlert size={18} /></button>
+                          <button 
+                            onClick={() => handleDeleteUser(user.uid)}
+                            className="p-3 glass rounded-xl hover:text-red-500 transition-colors"
+                            title="Remove User"
+                          >
+                            <ShieldAlert size={18} />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -635,7 +703,7 @@ export default function AdminDashboard() {
               </h3>
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={analyticsData.sales}>
+                  <AreaChart data={analytics.sales}>
                     <defs>
                       <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#D4AF37" stopOpacity={0.3}/>
@@ -662,7 +730,7 @@ export default function AdminDashboard() {
               </h3>
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={analyticsData.growth}>
+                  <BarChart data={analytics.growth}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
                     <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
                     <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
@@ -684,7 +752,7 @@ export default function AdminDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={analyticsData.categories}
+                      data={analytics.categories}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
@@ -692,7 +760,7 @@ export default function AdminDashboard() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {analyticsData.categories.map((entry, index) => (
+                      {analytics.categories.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
@@ -703,7 +771,7 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </div>
               <div className="space-y-2 mt-4">
-                {analyticsData.categories.map((cat, i) => (
+                {analytics.categories.map((cat, i) => (
                   <div key={i} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
