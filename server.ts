@@ -29,6 +29,9 @@ async function startServer() {
   app.use(express.json());
   app.use(cookieParser());
 
+  // Serve static files from public directory
+  app.use(express.static(path.join(__dirname, "public")));
+
   // Middleware to verify JWT and roles
   const authenticate = (roles: string[] = []) => {
     return (req: any, res: any, next: any) => {
