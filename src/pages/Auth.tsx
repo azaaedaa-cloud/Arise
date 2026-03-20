@@ -95,7 +95,7 @@ export default function Auth() {
               <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
                 <BookOpen className="text-luxury-black" size={24} />
               </div>
-              <span className="text-2xl font-bold tracking-tighter">LUXE<span className="text-gold">BOOKS</span></span>
+              <span className="text-2xl font-bold tracking-tighter">ARAIZE</span>
             </div>
             
             <h2 className="text-5xl font-bold tracking-tighter mb-8 leading-tight">

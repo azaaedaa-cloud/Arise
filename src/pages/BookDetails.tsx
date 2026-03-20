@@ -67,7 +67,7 @@ export default function BookDetails() {
 
   const handleShare = async () => {
     const shareData = {
-      title: book?.title || 'LuxeBooks Masterpiece',
+      title: book?.title || 'Araize Masterpiece',
       text: `Check out this masterpiece: ${book?.title} by ${book?.author}`,
       url: window.location.href,
     };

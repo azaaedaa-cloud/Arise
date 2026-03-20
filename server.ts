@@ -50,7 +50,7 @@ async function startServer() {
 
   // API Routes
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", message: "LuxeBooks Elite API is running" });
+    res.json({ status: "ok", message: "Araize Elite API is running" });
   });
 
   // Auth Routes

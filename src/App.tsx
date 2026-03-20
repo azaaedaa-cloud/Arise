@@ -125,7 +125,7 @@ export default function App() {
             <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center group-hover:rotate-12 transition-transform duration-300 shadow-[0_0_15px_rgba(212,175,55,0.5)]">
               <BookOpen className="text-luxury-black" size={24} />
             </div>
-            <span className="text-2xl font-bold tracking-tighter text-glow">LUXE<span className="text-gold">BOOKS</span></span>
+            <span className="text-2xl font-bold tracking-tighter text-glow">ARAIZE</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -221,7 +221,7 @@ export default function App() {
                 <div className="w-8 h-8 bg-gold rounded flex items-center justify-center">
                   <BookOpen className="text-luxury-black" size={18} />
                 </div>
-                <span className="text-xl font-bold tracking-tighter">LUXE<span className="text-gold">BOOKS</span></span>
+                <span className="text-xl font-bold tracking-tighter">ARAIZE</span>
               </div>
               <p className="text-luxury-accent max-w-md leading-relaxed">
                 The world's most exclusive digital and physical bookstore. Curated for the elite, powered by performance.
@@ -245,7 +245,7 @@ export default function App() {
             </div>
           </div>
           <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center text-luxury-accent text-sm">
-            © 2026 LuxeBooks Platform. All rights reserved.
+            © 2026 Araize Platform. All rights reserved.
           </div>
         </footer>
       </div>
