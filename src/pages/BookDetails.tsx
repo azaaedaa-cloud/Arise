@@ -62,6 +62,32 @@ export default function BookDetails() {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: book?.title || 'LuxeBooks Masterpiece',
+      text: `Check out this masterpiece: ${book?.title} by ${book?.author}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        // Using a simple notification since alert is discouraged
+        const notification = document.createElement('div');
+        notification.className = 'fixed bottom-8 left-1/2 -translate-x-1/2 glass px-8 py-4 rounded-full text-gold font-bold z-50 animate-bounce';
+        notification.innerText = 'Link copied to clipboard!';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        console.error('Error sharing:', err);
+      }
+    }
+  };
+
   if (loading) return (
     <div className="max-w-7xl mx-auto px-6 py-40 flex flex-col items-center justify-center gap-8">
       <div className="w-16 h-16 border-4 border-gold border-t-transparent rounded-full animate-spin" />
@@ -143,6 +169,13 @@ export default function BookDetails() {
             </button>
             <button className="p-4 glass rounded-2xl hover:text-red-500 transition-colors">
               <Heart size={24} />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="p-4 glass rounded-2xl hover:text-gold transition-colors"
+              title="Share Masterpiece"
+            >
+              <Share2 size={24} />
             </button>
           </div>
 
