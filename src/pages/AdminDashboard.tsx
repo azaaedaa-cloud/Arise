@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc, onSnapshot } from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, auth, storage } from '../firebase';
 import { Book, UserProfile, Order, OrderItem } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Edit2, Trash2, Save, X, BookOpen, LayoutDashboard, Users, ShoppingBag, BarChart3, Star, Crown, ShieldAlert, TrendingUp, Search, Filter, AlertTriangle, Check, ChevronDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, BookOpen, LayoutDashboard, Users, ShoppingBag, BarChart3, Star, Crown, ShieldAlert, TrendingUp, Search, Filter, AlertTriangle, Check, ChevronDown, Upload, FileText, Image as ImageIcon } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
 import { toast } from 'react-hot-toast';
 import { UserRole, UserPermissions } from '../types';
@@ -25,6 +26,9 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'products' | 'users' | 'orders' | 'analytics'>('products');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTier, setFilterTier] = useState<string>('all');
+  const [uploading, setUploading] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [formData, setFormData] = useState<Partial<Book>>({
     title: '',
     author: '',
@@ -87,6 +91,10 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
+    if (!hasAccess('manageOrders')) {
+      toast.error("You do not have permission to manage orders");
+      return;
+    }
     try {
       await updateDoc(doc(db, 'orders', orderId), { status: newStatus });
       sounds.success.play();
@@ -98,6 +106,10 @@ export default function AdminDashboard() {
   };
 
   const handleGrantAccess = async (userId: string, bookId: string) => {
+    if (!hasAccess('manageUsers')) {
+      toast.error("You do not have permission to grant access");
+      return;
+    }
     try {
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
@@ -122,15 +134,41 @@ export default function AdminDashboard() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!hasAccess('manageProducts')) {
+      toast.error("You do not have permission to manage products");
+      return;
+    }
+    setUploading(true);
     try {
+      let coverImageUrl = formData.coverImage;
+      let pdfUrl = formData.pdfUrl;
+
+      if (coverFile) {
+        const coverRef = ref(storage, `covers/${Date.now()}_${coverFile.name}`);
+        const snapshot = await uploadBytes(coverRef, coverFile);
+        coverImageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      if (pdfFile) {
+        const pdfRef = ref(storage, `books/${Date.now()}_${pdfFile.name}`);
+        const snapshot = await uploadBytes(pdfRef, pdfFile);
+        pdfUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      const bookData = {
+        ...formData,
+        coverImage: coverImageUrl,
+        pdfUrl: pdfUrl,
+      };
+
       if (editingId) {
         // تعديل منتج موجود (تغيير سعر، غلاف، الخ)
-        await updateDoc(doc(db, 'books', editingId), formData);
+        await updateDoc(doc(db, 'books', editingId), bookData);
         toast.success("تم تحديث بيانات المنتج (السعر/الغلاف/إلخ)");
       } else {
         // إضافة منتج جديد كلياً
         await addDoc(collection(db, 'books'), {
-          ...formData,
+          ...bookData,
           rating: 5,
           reviewCount: 0,
           createdAt: new Date().toISOString()
@@ -144,14 +182,33 @@ export default function AdminDashboard() {
       // إغلاق النموذج وتفريغ البيانات
       setIsAdding(false);
       setEditingId(null);
-      setFormData({ title: '', author: '', description: '', price: 0, category: 'Fiction', stock: 10, isDigital: false, tier: 'growth', coverImage: '' });
+      setPdfFile(null);
+      setCoverFile(null);
+      setFormData({ 
+        title: '', 
+        author: '', 
+        description: '', 
+        price: 0, 
+        category: 'Fiction', 
+        stock: 10, 
+        isDigital: false, 
+        tier: 'growth', 
+        coverImage: '', 
+        pdfUrl: '' 
+      });
     } catch (error) {
       console.error("Error saving book:", error);
       toast.error("حدث خطأ أثناء حفظ المنتج");
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
+    if (!hasAccess('manageProducts')) {
+      toast.error("You do not have permission to delete products");
+      return;
+    }
     if (!window.confirm("Are you sure you want to delete this masterpiece?")) return;
     try {
       await deleteDoc(doc(db, 'books', id));
@@ -163,6 +220,10 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (uid: string) => {
+    if (!hasAccess('manageUsers')) {
+      toast.error("You do not have permission to delete users");
+      return;
+    }
     if (uid === auth.currentUser?.uid) {
       toast.error("لا يمكنك حذف حسابك الشخصي من هنا.");
       return;
@@ -368,7 +429,7 @@ export default function AdminDashboard() {
               >
                 Products
               </button>
-              {hasAccess('manageUsers') && (
+              {(userRole === 'admin' || userRole === 'super_admin') && (
                 <button 
                   onClick={() => setActiveTab('users')}
                   className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'users' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
@@ -845,18 +906,99 @@ export default function AdminDashboard() {
                   <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Stock</label>
                   <input type="number" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.stock} onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value)})} required />
                 </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Category</label>
+                  <select className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest appearance-none cursor-pointer" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Digital">Digital</option>
+                    <option value="Limited Edition">Limited Edition</option>
+                    <option value="Business">Business</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Philosophy">Philosophy</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Format</label>
+                  <div className="flex items-center gap-6 h-[60px]">
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({...formData, isDigital: true})}
+                      className={`flex-1 h-full border transition-all font-accent text-[10px] uppercase tracking-widest ${formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
+                    >
+                      Digital
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setFormData({...formData, isDigital: false})}
+                      className={`flex-1 h-full border transition-all font-accent text-[10px] uppercase tracking-widest ${!formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
+                    >
+                      Physical
+                    </button>
+                  </div>
+                </div>
                 <div className="col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Cover Image URL</label>
-                  <input type="text" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.coverImage} onChange={(e) => setFormData({...formData, coverImage: e.target.value})} />
+                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Cover Image URL (Optional if uploading)</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.coverImage} onChange={(e) => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." />
+                </div>
+                <div className="col-span-2 grid grid-cols-2 gap-10">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Upload Cover Image</label>
+                    <div className="relative group">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
+                        className="hidden" 
+                        id="cover-upload"
+                      />
+                      <label 
+                        htmlFor="cover-upload"
+                        className="flex items-center justify-center gap-4 w-full bg-white/5 border border-white/10 p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                      >
+                        {coverFile ? <Check size={16} className="text-green-500" /> : <ImageIcon size={16} className="text-gold" />}
+                        {coverFile ? coverFile.name : 'Choose Image'}
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Upload PDF Book</label>
+                    <div className="relative group">
+                      <input 
+                        type="file" 
+                        accept="application/pdf"
+                        onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
+                        className="hidden" 
+                        id="pdf-upload"
+                      />
+                      <label 
+                        htmlFor="pdf-upload"
+                        className="flex items-center justify-center gap-4 w-full bg-white/5 border border-white/10 p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                      >
+                        {pdfFile ? <Check size={16} className="text-green-500" /> : <FileText size={16} className="text-gold" />}
+                        {pdfFile ? pdfFile.name : 'Choose PDF'}
+                      </label>
+                    </div>
+                  </div>
                 </div>
                 <div className="col-span-2">
                   <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Description</label>
                   <textarea className="w-full h-40 bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all resize-none font-accent text-sm tracking-widest leading-relaxed" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
                 </div>
                 <div className="col-span-2 pt-10">
-                  <button type="submit" className="btn-luxury w-full py-6 flex items-center justify-center gap-4 group">
-                    <Save size={20} />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.4em]">{editingId ? 'Update Masterpiece' : 'Save Masterpiece'}</span>
+                  <button 
+                    type="submit" 
+                    disabled={uploading}
+                    className="w-full btn-luxury flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+                  >
+                    {uploading ? (
+                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Save size={20} />
+                    )}
+                    <span className="text-[11px] font-bold uppercase tracking-[0.4em]">
+                      {uploading ? 'Processing Empire Assets...' : (editingId ? 'Update Masterpiece' : 'Forge New Masterpiece')}
+                    </span>
                   </button>
                 </div>
               </form>

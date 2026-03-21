@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 import firebaseAppletConfig from '../firebase-applet-config.json';
 
 const firebaseConfig = {
@@ -16,4 +17,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseAppletConfig.firestoreDatabaseId || '(default)');
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 export default app;

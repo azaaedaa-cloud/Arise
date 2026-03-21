@@ -2,9 +2,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { doc, getDoc, collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { Book, Review } from '../types';
-import { motion, useScroll, useTransform } from 'motion/react';
-import { Star, ShoppingCart, Heart, Share2, Shield, Zap, Globe, ArrowLeft, Send, Crown } from 'lucide-react';
+import { Book, Review, UserProfile } from '../types';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { Star, ShoppingCart, Heart, Share2, Shield, Zap, Globe, ArrowLeft, Send, Crown, BookOpen, X, Maximize2 } from 'lucide-react';
 import { useAppContext } from '../contexts/AppContext';
 
 export default function BookDetails() {
@@ -16,6 +16,8 @@ export default function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
+  const [hasAccess, setHasAccess] = useState(false);
+  const [showReader, setShowReader] = useState(false);
 
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 150]);
@@ -28,8 +30,21 @@ export default function BookDetails() {
         const docRef = doc(db, 'books', id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setBook({ id: docSnap.id, ...docSnap.data() } as Book);
+          const bookData = { id: docSnap.id, ...docSnap.data() } as Book;
+          setBook(bookData);
           
+          // Check access
+          if (auth.currentUser) {
+            const userRef = doc(db, 'users', auth.currentUser.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const userData = userSnap.data() as UserProfile;
+              const isOwner = userData.purchasedBooks?.includes(id);
+              const isAdmin = userData.role === 'admin' || userData.role === 'super_admin';
+              setHasAccess(isOwner || isAdmin);
+            }
+          }
+
           // Fetch reviews
           const reviewsRef = collection(db, 'books', id, 'reviews');
           const reviewsSnap = await getDocs(reviewsRef);
@@ -179,10 +194,20 @@ export default function BookDetails() {
                   +
                 </button>
               </div>
-              <button className="btn-luxury flex-grow flex items-center justify-center gap-4 w-full sm:w-auto">
-                <ShoppingCart size={18} />
-                {t('common.addtocart')}
-              </button>
+              {hasAccess && book.isDigital && book.pdfUrl ? (
+                <button 
+                  onClick={() => setShowReader(true)}
+                  className="btn-luxury flex-grow flex items-center justify-center gap-4 w-full sm:w-auto bg-green-600 hover:bg-green-500 text-white"
+                >
+                  <BookOpen size={18} />
+                  READ MASTERPIECE
+                </button>
+              ) : (
+                <button className="btn-luxury flex-grow flex items-center justify-center gap-4 w-full sm:w-auto">
+                  <ShoppingCart size={18} />
+                  {t('common.addtocart')}
+                </button>
+              )}
               <div className="flex gap-4 w-full sm:w-auto">
                 <button className="p-5 border border-white/10 hover:border-white/30 transition-colors text-luxury-accent hover:text-white">
                   <Heart size={24} />
@@ -295,6 +320,57 @@ export default function BookDetails() {
           </div>
         </section>
       </div>
+
+      {/* PDF Reader Modal */}
+      <AnimatePresence>
+        {showReader && book.pdfUrl && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex flex-col bg-luxury-black"
+          >
+            <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 bg-luxury-black/80 backdrop-blur-xl">
+              <div className="flex items-center gap-6">
+                <div className="w-10 h-14 border border-gold/30 overflow-hidden">
+                  <img src={book.coverImage} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-display">{book.title}</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-gold font-accent">{book.author}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-6">
+                <button 
+                  onClick={() => window.open(book.pdfUrl, '_blank')}
+                  className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"
+                  title="Open in New Tab"
+                >
+                  <Maximize2 size={20} />
+                </button>
+                <button 
+                  onClick={() => setShowReader(false)}
+                  className="p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex-1 w-full h-full bg-[#1a1a1a] overflow-hidden">
+              <iframe 
+                src={`${book.pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                className="w-full h-full border-none"
+                title={book.title}
+              />
+            </div>
+            
+            <div className="px-8 py-4 border-t border-white/5 bg-luxury-black/80 text-center">
+              <p className="text-[10px] uppercase tracking-[0.4em] text-luxury-accent font-accent">Elite Reading Experience • Araize Masterpiece Collection</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
