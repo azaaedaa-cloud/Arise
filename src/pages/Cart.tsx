@@ -47,12 +47,16 @@ export default function Cart() {
     
     setLoading(true);
     try {
+      // Generate a unique idempotency key for this transaction attempt
+      const idempotencyKey = `checkout_${auth.currentUser.uid}_${Date.now()}`;
+
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           items: cartItems,
           userId: auth.currentUser.uid,
+          idempotencyKey,
           success_url: `${window.location.origin}/success`,
           cancel_url: `${window.location.origin}/cart`
         })

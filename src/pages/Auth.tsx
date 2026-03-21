@@ -29,10 +29,19 @@ export default function Auth() {
     setLoading(true);
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const idToken = await userCredential.user.getIdToken();
+        
+        // Sync with backend to set JWT cookie
+        await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, email: userCredential.user.email, uid: userCredential.user.uid })
+        });
       } else {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(userCredential.user, { displayName });
+        const idToken = await userCredential.user.getIdToken();
         
         // Create user profile in Firestore
         await setDoc(doc(db, 'users', userCredential.user.uid), {
@@ -43,6 +52,13 @@ export default function Auth() {
           createdAt: new Date().toISOString(),
           wishlist: [],
           purchasedBooks: []
+        });
+
+        // Sync with backend
+        await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken, email, uid: userCredential.user.uid })
         });
       }
       navigate('/');
@@ -59,7 +75,16 @@ export default function Auth() {
     setError('');
     setLoading(true);
     try {
-      await signInWithPopup(auth, provider);
+      const userCredential = await signInWithPopup(auth, provider);
+      const idToken = await userCredential.user.getIdToken();
+      
+      // Sync with backend
+      await fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken, email: userCredential.user.email, uid: userCredential.user.uid })
+      });
+
       navigate('/');
     } catch (err: any) {
       console.error("Google Sign In Error:", err);
