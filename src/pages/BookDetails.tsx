@@ -10,7 +10,7 @@ import { useAppContext } from '../contexts/AppContext';
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useAppContext();
+  const { t, addToCart } = useAppContext();
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,8 +41,12 @@ export default function BookDetails() {
               const userData = userSnap.data() as UserProfile;
               const isOwner = userData.purchasedBooks?.includes(id);
               const isAdmin = userData.role === 'admin' || userData.role === 'super_admin';
-              setHasAccess(isOwner || isAdmin);
+              
+              // Access is granted if user is an admin OR has purchased the book
+              setHasAccess(isAdmin || isOwner);
             }
+          } else {
+            setHasAccess(false);
           }
 
           // Fetch reviews
@@ -59,7 +63,7 @@ export default function BookDetails() {
       }
     };
     fetchBook();
-  }, [id, navigate]);
+  }, [id, navigate, auth.currentUser]);
 
   const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,10 +207,13 @@ export default function BookDetails() {
                   READ MASTERPIECE
                 </button>
               ) : (
-                <button className="btn-luxury flex-grow flex items-center justify-center gap-4 w-full sm:w-auto">
-                  <ShoppingCart size={18} />
-                  {t('common.addtocart')}
-                </button>
+              <button 
+                onClick={() => book && addToCart(book, quantity)}
+                className="btn-luxury flex-grow flex items-center justify-center gap-4 w-full sm:w-auto"
+              >
+                <ShoppingCart size={18} />
+                {t('common.addtocart')}
+              </button>
               )}
               <div className="flex gap-4 w-full sm:w-auto">
                 <button className="p-5 border border-white/10 hover:border-white/30 transition-colors text-luxury-accent hover:text-white">

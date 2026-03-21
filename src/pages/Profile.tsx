@@ -7,12 +7,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { User, Package, Heart, Settings, LogOut, Star, Clock, ChevronRight, BookOpen, Crown, Shield, Zap, Globe } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useAppContext } from '../contexts/AppContext';
+import toast from 'react-hot-toast';
 
 export default function Profile() {
   const { t } = useAppContext();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [library, setLibrary] = useState<Book[]>([]);
+  const [wishlistBooks, setWishlistBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'profile' | 'orders' | 'library' | 'wishlist'>('profile');
   const navigate = useNavigate();
@@ -37,6 +39,14 @@ export default function Profile() {
             const qBooks = query(booksRef, where('__name__', 'in', profileData.purchasedBooks));
             const booksSnap = await getDocs(qBooks);
             setLibrary(booksSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)));
+          }
+
+          // Fetch wishlist books
+          if (profileData.wishlist && profileData.wishlist.length > 0) {
+            const booksRef = collection(db, 'books');
+            const qWishlist = query(booksRef, where('__name__', 'in', profileData.wishlist));
+            const wishlistSnap = await getDocs(qWishlist);
+            setWishlistBooks(wishlistSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Book)));
           }
         }
 
@@ -114,7 +124,10 @@ export default function Profile() {
                 ))}
                 
                 <div className="pt-8 mt-8 border-t border-white/5 space-y-2">
-                  <button className="w-full flex items-center gap-4 px-6 py-4 text-luxury-accent hover:text-white hover:bg-white/5 transition-all group">
+                  <button 
+                    onClick={() => toast.success("Settings coming soon to elite members.")}
+                    className="w-full flex items-center gap-4 px-6 py-4 text-luxury-accent hover:text-white hover:bg-white/5 transition-all group"
+                  >
                     <Settings size={18} />
                     <span className="text-[11px] font-bold uppercase tracking-[0.2em] font-accent">Settings</span>
                   </button>
@@ -230,7 +243,12 @@ export default function Profile() {
                           </div>
                           <h3 className="text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
                           <p className="text-[10px] uppercase tracking-widest text-luxury-accent mb-8 font-accent">{book.author}</p>
-                          <button className="btn-luxury w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em]">Read Masterpiece</button>
+                          <button 
+                            onClick={() => navigate(`/book/${book.id}`)}
+                            className="btn-luxury w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em]"
+                          >
+                            Read Masterpiece
+                          </button>
                         </motion.div>
                       ))
                     ) : (
@@ -304,6 +322,52 @@ export default function Profile() {
                       <div className="py-32 text-center luxury-card border-dashed">
                         <Package className="mx-auto text-gold/20 mb-6" size={48} />
                         <p className="text-luxury-accent text-lg italic">No acquisition history found.</p>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+              {activeView === 'wishlist' && (
+                <motion.div 
+                  key="wishlist"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                >
+                  <div className="flex items-center justify-between mb-12">
+                    <h2 className="text-4xl font-display">My Wishlist</h2>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{wishlistBooks.length} Masterpieces</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                    {wishlistBooks.length > 0 ? (
+                      wishlistBooks.map((book) => (
+                        <motion.div 
+                          key={book.id}
+                          whileHover={{ y: -10 }}
+                          className="luxury-card p-8 group"
+                        >
+                          <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-8 group-hover:border-gold transition-all">
+                            <img 
+                              src={book.coverImage} 
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                              referrerPolicy="no-referrer"
+                            />
+                          </div>
+                          <h3 className="text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
+                          <p className="text-[10px] uppercase tracking-widest text-luxury-accent mb-8 font-accent">{book.author}</p>
+                          <button 
+                            onClick={() => navigate(`/book/${book.id}`)}
+                            className="btn-luxury w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em]"
+                          >
+                            View Details
+                          </button>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="col-span-full py-32 text-center luxury-card border-dashed">
+                        <Heart className="mx-auto text-gold/20 mb-6" size={48} />
+                        <p className="text-luxury-accent text-lg italic">Your wishlist is currently empty. Begin your collection in the catalog.</p>
                       </div>
                     )}
                   </div>

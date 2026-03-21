@@ -7,33 +7,32 @@ import { OrderItem } from '../types';
 import { useAppContext } from '../contexts/AppContext';
 
 export default function Cart() {
-  const { t } = useAppContext();
+  const { t, removeFromCart, updateQuantity } = useAppContext();
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const refreshLocalCart = () => {
     const savedCart = localStorage.getItem('luxe_cart');
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
+    } else {
+      setCartItems([]);
     }
-  }, []);
-
-  const updateQuantity = (id: string, delta: number) => {
-    const newCart = cartItems.map(item => {
-      if (item.bookId === id) {
-        return { ...item, quantity: Math.max(1, item.quantity + delta) };
-      }
-      return item;
-    });
-    setCartItems(newCart);
-    localStorage.setItem('luxe_cart', JSON.stringify(newCart));
   };
 
-  const removeItem = (id: string) => {
-    const newCart = cartItems.filter(item => item.bookId !== id);
-    setCartItems(newCart);
-    localStorage.setItem('luxe_cart', JSON.stringify(newCart));
+  useEffect(() => {
+    refreshLocalCart();
+  }, []);
+
+  const handleUpdateQuantity = (id: string, delta: number) => {
+    updateQuantity(id, delta);
+    refreshLocalCart();
+  };
+
+  const handleRemoveItem = (id: string) => {
+    removeFromCart(id);
+    refreshLocalCart();
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -112,11 +111,11 @@ export default function Cart() {
                       
                       <div className="flex items-center justify-center sm:justify-start gap-8">
                         <div className="flex items-center border border-white/10 p-1">
-                          <button onClick={() => updateQuantity(item.bookId, -1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Minus size={14} /></button>
+                          <button onClick={() => handleUpdateQuantity(item.bookId, -1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Minus size={14} /></button>
                           <span className="w-10 text-center text-sm font-bold font-accent">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.bookId, 1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Plus size={14} /></button>
+                          <button onClick={() => handleUpdateQuantity(item.bookId, 1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Plus size={14} /></button>
                         </div>
-                        <button onClick={() => removeItem(item.bookId)} className="text-luxury-accent hover:text-red-500 transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest font-accent">
+                        <button onClick={() => handleRemoveItem(item.bookId)} className="text-luxury-accent hover:text-red-500 transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest font-accent">
                           <Trash2 size={16} />
                           <span>Remove</span>
                         </button>

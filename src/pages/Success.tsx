@@ -6,7 +6,10 @@ import { auth, db } from '../firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import confetti from 'canvas-confetti';
 
+import { useAppContext } from '../contexts/AppContext';
+
 export default function Success() {
+  const { clearCart } = useAppContext();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ export default function Success() {
           };
           
           await addDoc(collection(db, 'orders'), orderData);
-          localStorage.removeItem('luxe_cart');
+          clearCart();
           
           confetti({
             particleCount: 150,

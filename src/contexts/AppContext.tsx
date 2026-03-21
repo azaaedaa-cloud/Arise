@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import toast from 'react-hot-toast';
 
 type Theme = 'light' | 'dark';
 type Language = 'en' | 'ar';
@@ -9,6 +10,11 @@ interface AppContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  cartCount: number;
+  addToCart: (book: any, quantity?: number) => void;
+  removeFromCart: (bookId: string) => void;
+  updateQuantity: (bookId: string, delta: number) => void;
+  clearCart: () => void;
 }
 
 const translations: Record<Language, Record<string, string>> = {
@@ -139,6 +145,71 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return (saved as Language) || 'en';
   });
 
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const savedCart = localStorage.getItem('luxe_cart');
+    if (savedCart) {
+      const items = JSON.parse(savedCart);
+      const count = items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      setCartCount(count);
+    }
+  }, []);
+
+  const addToCart = (book: any, quantity: number = 1) => {
+    const savedCart = localStorage.getItem('luxe_cart');
+    let cart = savedCart ? JSON.parse(savedCart) : [];
+    
+    const existingItemIndex = cart.findIndex((item: any) => item.bookId === book.id);
+    
+    if (existingItemIndex > -1) {
+      cart[existingItemIndex].quantity += quantity;
+    } else {
+      cart.push({
+        bookId: book.id,
+        title: book.title,
+        price: book.price,
+        coverImage: book.coverImage,
+        quantity: quantity
+      });
+    }
+    
+    localStorage.setItem('luxe_cart', JSON.stringify(cart));
+    const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+    setCartCount(count);
+    toast.success(`${book.title} added to vault`);
+  };
+
+  const removeFromCart = (bookId: string) => {
+    const savedCart = localStorage.getItem('luxe_cart');
+    if (savedCart) {
+      let cart = JSON.parse(savedCart);
+      cart = cart.filter((item: any) => item.bookId !== bookId);
+      localStorage.setItem('luxe_cart', JSON.stringify(cart));
+      const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+      setCartCount(count);
+    }
+  };
+
+  const updateQuantity = (bookId: string, delta: number) => {
+    const savedCart = localStorage.getItem('luxe_cart');
+    if (savedCart) {
+      let cart = JSON.parse(savedCart);
+      const itemIndex = cart.findIndex((item: any) => item.bookId === bookId);
+      if (itemIndex > -1) {
+        cart[itemIndex].quantity = Math.max(1, cart[itemIndex].quantity + delta);
+        localStorage.setItem('luxe_cart', JSON.stringify(cart));
+        const count = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+        setCartCount(count);
+      }
+    }
+  };
+
+  const clearCart = () => {
+    localStorage.removeItem('luxe_cart');
+    setCartCount(0);
+  };
+
   useEffect(() => {
     localStorage.setItem('theme', theme);
     if (theme === 'dark') {
@@ -167,7 +238,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppContext.Provider value={{ theme, toggleTheme, language, setLanguage, t }}>
+    <AppContext.Provider value={{ 
+      theme, 
+      toggleTheme, 
+      language, 
+      setLanguage, 
+      t,
+      cartCount,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart
+    }}>
       {children}
     </AppContext.Provider>
   );

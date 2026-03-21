@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
-import { db } from '../firebase';
+import { collection, query, where, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
 import { Book } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Filter, Star, Heart, ShoppingCart, ChevronDown, LayoutGrid, List, Crown, TrendingUp, Zap, Gem } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
 import { sounds, spawnEmoji } from '../utils/interactions';
+import toast from 'react-hot-toast';
 
 const CATEGORIES = ["All", "Fiction", "Non-Fiction", "Digital", "Limited Edition", "Business", "Technology", "Philosophy"];
 const TIERS = ["All", "poverty", "growth", "wealth", "power"];
 
 export default function Catalog() {
-  const { t } = useAppContext();
+  const { t, addToCart } = useAppContext();
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +66,36 @@ export default function Catalog() {
     e.stopPropagation();
     sounds.click.play();
     spawnEmoji('💰', e.clientX, e.clientY);
-    // Add to cart logic would go here
+    addToCart(book);
+  };
+
+  const handleAddToWishlist = async (e: React.MouseEvent, bookId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!auth.currentUser) {
+      toast.error("Please sign in to add to wishlist");
+      return;
+    }
+
+    try {
+      const userRef = doc(db, 'users', auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const wishlist = userData.wishlist || [];
+        if (wishlist.includes(bookId)) {
+          const newWishlist = wishlist.filter((id: string) => id !== bookId);
+          await updateDoc(userRef, { wishlist: newWishlist });
+          toast.success("Removed from wishlist");
+        } else {
+          await updateDoc(userRef, { wishlist: [...wishlist, bookId] });
+          toast.success("Added to wishlist");
+        }
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+      toast.error("Failed to update wishlist");
+    }
   };
 
   const getTierIcon = (tier: string) => {
@@ -242,7 +272,10 @@ export default function Catalog() {
                         <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
                           <span className="text-2xl font-display text-white">${book.price}</span>
                           <div className="flex gap-4">
-                            <button className="p-3 border border-white/10 hover:border-white/30 transition-colors text-luxury-accent hover:text-white">
+                            <button 
+                              onClick={(e) => handleAddToWishlist(e, book.id)}
+                              className="p-3 border border-white/10 hover:border-white/30 transition-colors text-luxury-accent hover:text-white"
+                            >
                               <Heart size={18} />
                             </button>
                             <button 

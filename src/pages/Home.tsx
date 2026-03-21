@@ -12,7 +12,7 @@ import confetti from 'canvas-confetti';
 import { useAppContext } from '../contexts/AppContext';
 
 export default function Home() {
-  const { t } = useAppContext();
+  const { t, addToCart } = useAppContext();
   const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -374,7 +374,10 @@ export default function Home() {
                     >
                       {t('common.details')}
                     </Link>
-                    <button className="btn-outline flex-1 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2">
+                    <button 
+                      onClick={() => selectedBook && addToCart(selectedBook)}
+                      className="btn-outline flex-1 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2"
+                    >
                       <ShoppingCart size={18} />
                       {t('common.addvault')}
                     </button>

@@ -65,11 +65,10 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
 };
 
 export default function App() {
-  const { theme, toggleTheme, language, setLanguage, t } = useAppContext();
+  const { theme, toggleTheme, language, setLanguage, t, cartCount } = useAppContext();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     document.title = 'Araize';
