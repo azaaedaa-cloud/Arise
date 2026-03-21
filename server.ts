@@ -29,9 +29,6 @@ async function startServer() {
   app.use(express.json());
   app.use(cookieParser());
 
-  // Serve static files from public directory
-  app.use(express.static(path.join(__dirname, "public")));
-
   // Middleware to verify JWT and roles
   const authenticate = (roles: string[] = []) => {
     return (req: any, res: any, next: any) => {
@@ -137,7 +134,9 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+    // Serve static files from dist (which includes public contents)
     app.use(express.static(distPath));
+    // Catch-all for SPA routing
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
