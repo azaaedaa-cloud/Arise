@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { auth } from '../../firebase';
+import { auth } from '../../../firebase';
 
 /**
  * @description Strict IAM Middleware.

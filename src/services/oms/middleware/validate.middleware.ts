@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject, ZodError } from 'zod';
+import { ZodError, ZodTypeAny } from 'zod';
 
 /**
  * @description Hermetic Input Validation Middleware.
  * Use Zod to ruthlessly sanitize and validate 100% of incoming request payloads.
  */
-export const validateMiddleware = (schema: AnyZodObject) => {
+export const validateMiddleware = (schema: ZodTypeAny) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Ruthlessly sanitize and validate the request body
@@ -16,7 +16,7 @@ export const validateMiddleware = (schema: AnyZodObject) => {
       if (error instanceof ZodError) {
         return res.status(400).json({
           error: 'BAD_REQUEST: Payload validation failed',
-          details: error.errors.map(e => ({ path: e.path.join('.'), message: e.message }))
+          details: error.issues.map(e => ({ path: e.path.join('.'), message: e.message }))
         });
       }
       return res.status(500).json({ error: 'INTERNAL_SERVER_ERROR: Validation logic failed' });

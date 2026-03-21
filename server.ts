@@ -9,13 +9,22 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import * as admin from "firebase-admin";
+import fs from "fs";
 import omsRouter from "./src/services/oms/index";
 
+// Load Firebase configuration
+const firebaseConfig = JSON.parse(fs.readFileSync("./firebase-applet-config.json", "utf-8"));
+
 // Initialize Firebase Admin for server-side token verification
-if (!admin.apps.length) {
-  admin.initializeApp({
-    projectId: process.env.VITE_FIREBASE_PROJECT_ID || "araize-elite",
-  });
+try {
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      projectId: firebaseConfig.projectId,
+    });
+    console.log("FIREBASE_ADMIN_INITIALIZED");
+  }
+} catch (error) {
+  console.error("FIREBASE_ADMIN_INIT_FAILURE:", error);
 }
 
 dotenv.config();
@@ -55,10 +64,65 @@ async function startServer() {
     switch (event.type) {
       case "checkout.session.completed":
         const session = event.data.object as Stripe.Checkout.Session;
-        // [SAGA PATTERN] Trigger Order Fulfillment
-        console.log(`PAYMENT_SUCCESS: Session ${session.id} for User ${session.metadata?.userId}`);
-        // Here we would update Firestore order status to 'paid'
+        const orderId = session.metadata?.orderId;
+        
+        console.log(`PAYMENT_SUCCESS: Session ${session.id} for Order ${orderId}`);
+        
+        if (orderId && orderId !== "none") {
+          try {
+            const orderRef = admin.firestore().collection("orders").doc(orderId);
+            const orderDoc = await orderRef.get();
+            
+            if (orderDoc.exists && orderDoc.data()?.status !== "paid") {
+              await orderRef.update({
+                status: "paid",
+                stripeSessionId: session.id,
+                paidAt: admin.firestore.FieldValue.serverTimestamp()
+              });
+              console.log(`ORDER_UPDATED: Order ${orderId} marked as paid`);
+            }
+          } catch (dbErr) {
+            console.error(`ORDER_UPDATE_FAILURE: ${dbErr}`);
+          }
+        }
         break;
+
+      case "checkout.session.expired":
+        const expiredSession = event.data.object as Stripe.Checkout.Session;
+        const expiredOrderId = expiredSession.metadata?.orderId;
+        
+        if (expiredOrderId && expiredOrderId !== "none") {
+          try {
+            const orderRef = admin.firestore().collection("orders").doc(expiredOrderId);
+            const orderDoc = await orderRef.get();
+            
+            if (orderDoc.exists && orderDoc.data()?.status === "pending") {
+              const orderData = orderDoc.data();
+              const batch = admin.firestore().batch();
+              
+              // Return inventory to stock
+              for (const item of orderData?.items || []) {
+                const bookRef = admin.firestore().collection("books").doc(item.bookId);
+                batch.update(bookRef, {
+                  stock: admin.firestore.FieldValue.increment(item.quantity)
+                });
+              }
+              
+              batch.update(orderRef, { 
+                status: "cancelled", 
+                cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+                cancellationReason: "Stripe session expired"
+              });
+              
+              await batch.commit();
+              console.log(`ORDER_CANCELLED: Order ${expiredOrderId} cancelled and inventory returned`);
+            }
+          } catch (err) {
+            console.error(`ORDER_CANCEL_FAILURE: ${err}`);
+          }
+        }
+        break;
+
       case "payment_intent.payment_failed":
         console.error("PAYMENT_FAILED: Transaction declined");
         break;
@@ -153,14 +217,11 @@ async function startServer() {
   // Stripe Checkout Session - High Availability & Security
   app.post("/api/create-checkout-session", authenticate(["user", "admin", "super_admin"]), async (req, res) => {
     try {
-      const { items, success_url, cancel_url, userId, idempotencyKey } = req.body;
+      const { items, success_url, cancel_url, userId, idempotencyKey, orderId } = req.body;
 
       if (!items || items.length === 0) {
         return res.status(400).json({ error: "BAD_REQUEST: Cart is empty" });
       }
-
-      // [ZERO-TRUST] Validate items and prices on server-side if possible
-      // For now, we trust the payload but in production, we'd fetch prices from DB
 
       const line_items = items.map((item: any) => ({
         price_data: {
@@ -178,19 +239,20 @@ async function startServer() {
       }));
 
       const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"], // Explicitly support Visa, Mastercard, etc.
+        payment_method_types: ["card"],
         line_items,
         mode: "payment",
         success_url: `${success_url}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url,
-        customer_email: req.user.email,
+        customer_email: (req as any).user.email,
         metadata: {
           userId,
+          orderId: orderId || "none",
           idempotencyKey: idempotencyKey || "none",
           items: JSON.stringify(items.map((i: any) => ({ bookId: i.bookId, quantity: i.quantity }))),
         },
       }, {
-        idempotencyKey: idempotencyKey, // Stripe-level idempotency
+        idempotencyKey: idempotencyKey,
       });
 
       res.json({ url: session.url });

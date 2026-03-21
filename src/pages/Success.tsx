@@ -23,39 +23,18 @@ export default function Success() {
       }
 
       try {
-        // In a real app, you'd verify the session on the server
-        // For this demo, we'll assume it's valid if we have a session_id
-        // and clear the local cart.
+        // Clear the local cart immediately on success
+        clearCart();
+        localStorage.removeItem('luxe_cart');
         
-        const savedCart = localStorage.getItem('luxe_cart');
-        if (savedCart && auth.currentUser) {
-          const cartItems = JSON.parse(savedCart);
-          const total = cartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-          
-          const orderData = {
-            userId: auth.currentUser.uid,
-            items: cartItems,
-            totalAmount: total,
-            status: 'paid',
-            stripeSessionId: sessionId,
-            createdAt: new Date().toISOString()
-          };
-          
-          await addDoc(collection(db, 'orders'), orderData);
-          clearCart();
-          
-          confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#D4AF37', '#ffffff', '#000000']
-          });
-          
-          setStatus('success');
-        } else {
-          // If cart is already cleared, maybe they refreshed
-          setStatus('success');
-        }
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#D4AF37', '#ffffff', '#000000']
+        });
+        
+        setStatus('success');
       } catch (error) {
         console.error("Error processing order:", error);
         setStatus('error');
@@ -65,7 +44,6 @@ export default function Success() {
     if (auth.currentUser) {
       processOrder();
     } else {
-      // Wait for auth to initialize
       const unsubscribe = auth.onAuthStateChanged((user) => {
         if (user) {
           processOrder();
@@ -76,7 +54,7 @@ export default function Success() {
       });
       return () => unsubscribe();
     }
-  }, [sessionId, navigate]);
+  }, [sessionId, navigate, clearCart]);
 
   if (status === 'loading') {
     return (

@@ -1,4 +1,4 @@
-import { db, auth } from '../../firebase';
+import { db, auth } from '../../../firebase';
 import { 
   collection, 
   doc, 
@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 import { CheckoutPayloadSchema, CheckoutPayload } from '../schemas/checkout.schema';
 import { IdempotencyService } from './idempotency.service';
-import { Book, Order } from '../../types';
+import { Book, Order } from '../../../types';
 
 /**
  * @description The Order Management System (OMS) & Checkout Flow microservice.

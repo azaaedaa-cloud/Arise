@@ -3,7 +3,7 @@ import { authMiddleware } from './middleware/auth.middleware';
 import { validateMiddleware } from './middleware/validate.middleware';
 import { CheckoutPayloadSchema } from './schemas/checkout.schema';
 import { CheckoutService } from './domain/checkout.service';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 
 const router = express.Router();
 

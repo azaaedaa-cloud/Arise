@@ -1,4 +1,4 @@
-import { db } from '../../firebase';
+import { db } from '../../../firebase';
 import { doc, runTransaction, Timestamp } from 'firebase/firestore';
 
 /**

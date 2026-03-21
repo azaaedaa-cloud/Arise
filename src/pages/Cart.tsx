@@ -50,27 +50,55 @@ export default function Cart() {
       // Generate a unique idempotency key for this transaction attempt
       const idempotencyKey = `checkout_${auth.currentUser.uid}_${Date.now()}`;
 
-      const response = await fetch('/api/create-checkout-session', {
+      // 1. Create the order in OMS (Order Management System)
+      // This locks inventory and creates a 'pending' order record.
+      const omsResponse = await fetch('/api/oms/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
+        },
+        body: JSON.stringify({
+          items: cartItems.map(item => ({
+            bookId: item.bookId,
+            quantity: item.quantity,
+            priceAtPurchase: item.price
+          })),
+          idempotencyKey
+        })
+      });
+
+      const omsData = await omsResponse.json();
+      if (!omsResponse.ok) throw new Error(omsData.error || "OMS Checkout failed");
+      
+      const { data: { orderId } } = omsData;
+
+      // 2. Create Stripe Checkout Session
+      const stripeResponse = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${await auth.currentUser.getIdToken()}`
+        },
         body: JSON.stringify({ 
           items: cartItems,
           userId: auth.currentUser.uid,
           idempotencyKey,
+          orderId,
           success_url: `${window.location.origin}/success`,
           cancel_url: `${window.location.origin}/cart`
         })
       });
       
-      const { url, error } = await response.json();
+      const { url, error } = await stripeResponse.json();
       
       if (error) throw new Error(error);
       if (!url) throw new Error("Failed to create checkout session");
 
       window.location.href = url;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Checkout Error:", error);
-      alert("Elite transaction failed. Please try again.");
+      alert(error.message || "Elite transaction failed. Please try again.");
     } finally {
       setLoading(false);
     }
