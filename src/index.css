@@ -16,7 +16,7 @@
 
 @layer base {
   body {
-    @apply bg-luxury-black text-[#F5F5F5] font-sans antialiased selection:bg-gold selection:text-black;
+    @apply bg-luxury-black text-[#F5F5F5] font-sans antialiased selection:bg-gold selection:text-black overflow-x-hidden;
     min-height: 100vh;
   }
 
@@ -47,7 +47,7 @@
   }
 
   .section-divider {
-    @apply w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent my-20;
+    @apply w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent my-20 md:my-40;
   }
 
   .luxury-card {
@@ -63,4 +63,31 @@
 
 .animate-luxury-in {
   animation: fadeInScale 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Mobile Responsiveness Overrides */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .section-divider {
+    @apply my-12;
+  }
+  
+  h1 {
+    @apply !text-3xl;
+  }
+  
+  h2 {
+    @apply !text-2xl;
+  }
+
+  .btn-luxury, .btn-luxury-outline {
+    @apply px-6 py-3 text-[10px];
+  }
+
+  .luxury-card {
+    @apply p-6;
+  }
 }

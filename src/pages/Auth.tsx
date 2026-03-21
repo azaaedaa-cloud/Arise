@@ -70,7 +70,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-32 relative overflow-hidden bg-luxury-black">
+    <div className="min-h-screen flex items-center justify-center px-4 md:px-6 py-24 md:py-32 relative overflow-hidden bg-luxury-black">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold/5 rounded-full blur-[120px]" />
@@ -80,7 +80,7 @@ export default function Auth() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 luxury-card overflow-hidden min-h-[700px]"
+        className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 luxury-card overflow-hidden min-h-[600px] md:min-h-[700px]"
       >
         {/* Left Side - Brand & Story */}
         <div className="hidden lg:flex flex-col justify-between p-20 bg-gradient-to-br from-luxury-gray to-luxury-black relative">
@@ -134,10 +134,10 @@ export default function Auth() {
         </div>
 
         {/* Right Side - Auth Form */}
-        <div className="p-12 md:p-20 flex flex-col justify-center bg-luxury-black/40">
-          <div className="mb-16">
-            <h3 className="text-4xl font-display mb-4">{isLogin ? 'Sign In' : 'Create Account'}</h3>
-            <p className="text-luxury-accent font-light italic">{isLogin ? 'Welcome back to the elite circle.' : 'Begin your journey to sovereignty.'}</p>
+        <div className="p-8 md:p-20 flex flex-col justify-center bg-luxury-black/40">
+          <div className="mb-10 md:mb-16">
+            <h3 className="text-3xl md:text-4xl font-display mb-4">{isLogin ? 'Sign In' : 'Create Account'}</h3>
+            <p className="text-luxury-accent text-sm md:text-base font-light italic">{isLogin ? 'Welcome back to the elite circle.' : 'Begin your journey to sovereignty.'}</p>
           </div>
 
           {error && (
@@ -212,12 +212,12 @@ export default function Auth() {
             </button>
           </form>
 
-          <div className="relative my-16">
+          <div className="relative my-10 md:my-16">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/5"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-luxury-black px-6 text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">Or continue with</span>
+              <span className="bg-luxury-black px-4 md:px-6 text-[9px] md:text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">Or continue with</span>
             </div>
           </div>
 

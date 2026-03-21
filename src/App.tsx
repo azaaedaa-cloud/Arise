@@ -124,7 +124,7 @@ export default function App() {
           },
         }} />
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-500 bg-luxury-black/80 backdrop-blur-xl border-b border-white/5">
+        <nav className="fixed top-0 left-0 w-full z-50 px-4 md:px-6 py-4 md:py-6 transition-all duration-500 bg-luxury-black/80 backdrop-blur-xl border-b border-white/5">
           <div className="container mx-auto flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 border border-gold/30 flex items-center justify-center group-hover:border-gold transition-colors">

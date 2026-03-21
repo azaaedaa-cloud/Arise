@@ -109,12 +109,12 @@ export default function Catalog() {
   };
 
   return (
-    <div className="bg-luxury-black min-h-screen text-[#F5F5F5] pt-32 pb-40">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+    <div className="bg-luxury-black min-h-screen text-[#F5F5F5] pt-24 md:pt-32 pb-20 md:pb-40">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 md:gap-12 mb-12 md:mb-24">
           <div className="max-w-2xl">
-            <div className="text-gold text-[10px] font-bold uppercase tracking-[0.5em] mb-6 font-accent">The Collection</div>
-            <h1 className="text-5xl md:text-7xl font-display mb-6 leading-tight">
+            <div className="text-gold text-[10px] font-bold uppercase tracking-[0.5em] mb-4 md:mb-6 font-accent">The Collection</div>
+            <h1 className="text-4xl md:text-7xl font-display mb-6 leading-tight">
               ELITE <span className="gold-text italic">CATALOG</span>
             </h1>
             <p className="text-luxury-accent font-light leading-relaxed">
@@ -150,20 +150,20 @@ export default function Catalog() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
           {/* Sidebar Filters */}
-          <aside className="lg:col-span-3 space-y-16">
+          <aside className="lg:col-span-3 space-y-8 md:space-y-16">
             <section>
-              <h3 className="text-[11px] font-bold mb-8 flex items-center gap-3 text-gold uppercase tracking-[0.3em] font-accent">
+              <h3 className="text-[10px] md:text-[11px] font-bold mb-4 md:mb-8 flex items-center gap-3 text-gold uppercase tracking-[0.3em] font-accent">
                 <Filter size={14} />
                 {t('common.categories')}
               </h3>
-              <div className="flex flex-wrap lg:flex-col gap-3">
+              <div className="flex flex-wrap lg:flex-col gap-2 md:gap-3">
                 {CATEGORIES.map(cat => (
                   <button 
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`text-left text-xs uppercase tracking-widest py-2 transition-all border-b ${selectedCategory === cat ? 'text-gold border-gold' : 'text-luxury-accent border-transparent hover:text-white hover:border-white/20'}`}
+                    className={`text-left text-[10px] md:text-xs uppercase tracking-widest py-1 md:py-2 transition-all border-b ${selectedCategory === cat ? 'text-gold border-gold' : 'text-luxury-accent border-transparent hover:text-white hover:border-white/20'}`}
                   >
                     {cat}
                   </button>
@@ -172,16 +172,16 @@ export default function Catalog() {
             </section>
 
             <section>
-              <h3 className="text-[11px] font-bold mb-8 flex items-center gap-3 text-gold uppercase tracking-[0.3em] font-accent">
+              <h3 className="text-[10px] md:text-[11px] font-bold mb-4 md:mb-8 flex items-center gap-3 text-gold uppercase tracking-[0.3em] font-accent">
                 <Crown size={14} />
                 {t('common.tiers')}
               </h3>
-              <div className="flex flex-wrap lg:flex-col gap-3">
+              <div className="flex flex-wrap lg:flex-col gap-2 md:gap-3">
                 {TIERS.map(tier => (
                   <button 
                     key={tier}
                     onClick={() => setSelectedTier(tier)}
-                    className={`text-left text-xs uppercase tracking-widest py-2 transition-all border-b ${selectedTier === tier ? 'text-gold border-gold' : 'text-luxury-accent border-transparent hover:text-white hover:border-white/20'}`}
+                    className={`text-left text-[10px] md:text-xs uppercase tracking-widest py-1 md:py-2 transition-all border-b ${selectedTier === tier ? 'text-gold border-gold' : 'text-luxury-accent border-transparent hover:text-white hover:border-white/20'}`}
                   >
                     {tier}
                   </button>
@@ -190,9 +190,9 @@ export default function Catalog() {
             </section>
 
             <section>
-              <h3 className="text-[11px] font-bold mb-8 uppercase tracking-[0.3em] font-accent text-gold">SORT BY</h3>
+              <h3 className="text-[10px] md:text-[11px] font-bold mb-4 md:mb-8 uppercase tracking-[0.3em] font-accent text-gold">SORT BY</h3>
               <select 
-                className="w-full bg-white/[0.03] border border-white/10 p-4 text-xs uppercase tracking-widest outline-none focus:border-gold/50 cursor-pointer appearance-none"
+                className="w-full bg-white/[0.03] border border-white/10 p-3 md:p-4 text-[10px] md:text-xs uppercase tracking-widest outline-none focus:border-gold/50 cursor-pointer appearance-none"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -252,16 +252,16 @@ export default function Catalog() {
                         </div>
                       </div>
                       
-                      <div className="flex flex-col flex-grow">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[10px] text-gold font-bold uppercase tracking-[0.2em] font-accent">{book.category}</span>
-                          <div className="flex items-center gap-1 text-[10px] text-gold">
+                      <div className={`flex flex-col flex-grow ${viewMode === 'list' ? 'px-0 md:px-0' : ''}`}>
+                        <div className="flex items-center justify-between mb-2 md:mb-4">
+                          <span className="text-[9px] md:text-[10px] text-gold font-bold uppercase tracking-[0.2em] font-accent">{book.category}</span>
+                          <div className="flex items-center gap-1 text-[9px] md:text-[10px] text-gold">
                             <Star size={10} fill="currentColor" />
                             {book.rating}
                           </div>
                         </div>
-                        <h3 className="text-2xl font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
-                        <p className="text-luxury-accent text-xs mb-6 uppercase tracking-widest font-light">{book.author}</p>
+                        <h3 className="text-xl md:text-2xl font-display mb-2 group-hover:text-gold transition-colors line-clamp-2">{book.title}</h3>
+                        <p className="text-luxury-accent text-[10px] md:text-xs mb-4 md:mb-6 uppercase tracking-widest font-light">{book.author}</p>
                         
                         {viewMode === 'list' && (
                           <p className="text-luxury-accent text-sm mb-8 line-clamp-3 leading-relaxed font-light">

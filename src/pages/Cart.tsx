@@ -73,11 +73,11 @@ export default function Cart() {
   };
 
   return (
-    <div className="min-h-screen bg-luxury-black pt-32 pb-20 px-6">
+    <div className="min-h-screen bg-luxury-black pt-24 md:pt-32 pb-20 px-4 md:px-6">
       <div className="container mx-auto">
-        <div className="mb-20">
-          <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-6 font-accent">Your Selection</h4>
-          <h1 className="text-6xl font-display tracking-tight leading-tight">
+        <div className="mb-12 md:mb-20">
+          <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-4 md:mb-6 font-accent">Your Selection</h4>
+          <h1 className="text-4xl md:text-6xl font-display tracking-tight leading-tight">
             THE <span className="gold-text">COLLECTION</span> <br />
             CURATED.
           </h1>
@@ -86,7 +86,7 @@ export default function Cart() {
         {cartItems.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
             {/* Cart Items */}
-            <div className="lg:col-span-8 space-y-8">
+            <div className="lg:col-span-8 space-y-6 md:space-y-8">
               <AnimatePresence mode="popLayout">
                 {cartItems.map((item) => (
                   <motion.div 
@@ -95,9 +95,9 @@ export default function Cart() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="luxury-card p-10 flex flex-col sm:flex-row items-center gap-10 group"
+                    className="luxury-card p-6 md:p-10 flex flex-col sm:flex-row items-center gap-6 md:gap-10 group"
                   >
-                    <div className="w-32 h-48 overflow-hidden border border-white/5 group-hover:border-gold transition-all">
+                    <div className="w-24 h-36 md:w-32 md:h-48 overflow-hidden border border-white/5 group-hover:border-gold transition-all flex-shrink-0">
                       <img 
                         src={item.coverImage || `https://picsum.photos/seed/${item.bookId}/100/150`} 
                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
@@ -105,24 +105,24 @@ export default function Cart() {
                       />
                     </div>
                     
-                    <div className="flex-grow text-center sm:text-left">
-                      <h3 className="text-2xl font-display mb-2 group-hover:text-gold transition-colors">{item.title}</h3>
-                      <div className="text-gold font-display text-xl mb-8">${item.price}</div>
+                    <div className="flex-grow text-center sm:text-left w-full">
+                      <h3 className="text-xl md:text-2xl font-display mb-2 group-hover:text-gold transition-colors">{item.title}</h3>
+                      <div className="text-gold font-display text-lg md:text-xl mb-6 md:mb-8">${item.price}</div>
                       
-                      <div className="flex items-center justify-center sm:justify-start gap-8">
+                      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-6 md:gap-8">
                         <div className="flex items-center border border-white/10 p-1">
-                          <button onClick={() => handleUpdateQuantity(item.bookId, -1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Minus size={14} /></button>
-                          <span className="w-10 text-center text-sm font-bold font-accent">{item.quantity}</span>
-                          <button onClick={() => handleUpdateQuantity(item.bookId, 1)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Plus size={14} /></button>
+                          <button onClick={() => handleUpdateQuantity(item.bookId, -1)} className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Minus className="w-3 h-3 md:w-3.5 md:h-3.5" /></button>
+                          <span className="w-8 md:w-10 text-center text-xs md:text-sm font-bold font-accent">{item.quantity}</span>
+                          <button onClick={() => handleUpdateQuantity(item.bookId, 1)} className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent hover:text-white"><Plus className="w-3 h-3 md:w-3.5 md:h-3.5" /></button>
                         </div>
-                        <button onClick={() => handleRemoveItem(item.bookId)} className="text-luxury-accent hover:text-red-500 transition-colors flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest font-accent">
-                          <Trash2 size={16} />
+                        <button onClick={() => handleRemoveItem(item.bookId)} className="text-luxury-accent hover:text-red-500 transition-colors flex items-center gap-2 text-[9px] md:text-[10px] font-bold uppercase tracking-widest font-accent">
+                          <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           <span>Remove</span>
                         </button>
                       </div>
                     </div>
                     
-                    <div className="text-3xl font-display text-white">
+                    <div className="text-2xl md:text-3xl font-display text-white mt-4 sm:mt-0">
                       ${(item.price * item.quantity).toFixed(2)}
                     </div>
                   </motion.div>
@@ -132,21 +132,21 @@ export default function Cart() {
 
             {/* Summary */}
             <div className="lg:col-span-4">
-              <div className="luxury-card p-12 sticky top-32">
-                <h2 className="text-[11px] font-bold mb-12 text-gold uppercase tracking-[0.3em] font-accent">Summary</h2>
+              <div className="luxury-card p-8 md:p-12 sticky top-32">
+                <h2 className="text-[10px] md:text-[11px] font-bold mb-8 md:mb-12 text-gold uppercase tracking-[0.3em] font-accent">Summary</h2>
                 
-                <div className="space-y-6 mb-12">
-                  <div className="flex justify-between text-luxury-accent text-sm font-light tracking-widest uppercase">
+                <div className="space-y-4 md:space-y-6 mb-8 md:mb-12">
+                  <div className="flex justify-between text-luxury-accent text-[10px] md:text-sm font-light tracking-widest uppercase">
                     <span>Subtotal</span>
                     <span className="text-white font-bold">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-luxury-accent text-sm font-light tracking-widest uppercase">
+                  <div className="flex justify-between text-luxury-accent text-[10px] md:text-sm font-light tracking-widest uppercase">
                     <span>Elite Shipping</span>
                     <span className="text-white font-bold">{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
                   </div>
-                  <div className="pt-8 border-t border-white/5 flex justify-between">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.3em] font-accent">Total Investment</span>
-                    <span className="text-3xl font-display text-gold">${total.toFixed(2)}</span>
+                  <div className="pt-6 md:pt-8 border-t border-white/5 flex justify-between items-center">
+                    <span className="text-[9px] md:text-[11px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] font-accent">Total Investment</span>
+                    <span className="text-2xl md:text-3xl font-display text-gold">${total.toFixed(2)}</span>
                   </div>
                 </div>
 

@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <motion.div ref={containerRef} className="bg-luxury-black text-[#F5F5F5]">
       {/* Hero Section: Editorial Luxury */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative h-[90vh] md:h-screen flex items-center justify-center overflow-hidden">
         {/* Background Layer */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-luxury-black/40 via-luxury-black/80 to-luxury-black z-10" />
@@ -80,7 +80,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-5xl md:text-8xl font-display mb-8 leading-tight max-w-5xl"
+            className="text-4xl sm:text-5xl md:text-8xl font-display mb-8 leading-tight max-w-5xl"
           >
             {t('hero.title1')} <br />
             <span className="gold-text italic">{t('hero.title4')}</span>
@@ -140,7 +140,7 @@ export default function Home() {
         <div className="section-divider" />
 
         {/* Phase 01: Growth */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center py-20">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center py-12 md:py-20">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -180,10 +180,10 @@ export default function Home() {
         <div className="section-divider" />
 
         {/* Phase 02: Wealth */}
-        <section className="py-20">
-          <div className="text-center mb-24">
+        <section className="py-12 md:py-20">
+          <div className="text-center mb-12 md:mb-24">
             <div className="text-gold text-[11px] font-bold uppercase tracking-[0.3em] mb-6 font-accent">Phase 02: {t('common.wealth')}</div>
-            <h2 className="text-5xl md:text-7xl font-display">{t('home.phase2.title')}</h2>
+            <h2 className="text-4xl md:text-7xl font-display">{t('home.phase2.title')}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
@@ -213,15 +213,15 @@ export default function Home() {
         <div className="section-divider" />
 
         {/* Phase 03: Power */}
-        <section className="relative py-40 text-center">
+        <section className="relative py-20 md:py-40 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto"
+            className="max-w-4xl mx-auto px-4"
           >
-            <Crown className="mx-auto mb-10 text-gold/40" size={60} />
-            <h2 className="text-6xl md:text-9xl font-display mb-10 leading-tight">
+            <Crown className="mx-auto mb-6 md:mb-10 text-gold/40 w-10 h-10 md:w-15 md:h-15" />
+            <h2 className="text-4xl md:text-9xl font-display mb-8 md:mb-10 leading-tight">
               {t('home.phase3.title')} <br />
               <span className="gold-text italic">{t('common.power')}</span>
             </h2>
@@ -241,10 +241,10 @@ export default function Home() {
         <div className="section-divider" />
 
         {/* Featured Books */}
-        <section className="py-20 mb-40">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
+        <section className="py-12 md:py-20 mb-20 md:mb-40">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 md:mb-20 gap-8">
             <div className="max-w-2xl">
-              <h2 className="text-4xl md:text-6xl font-display mb-6">
+              <h2 className="text-3xl md:text-6xl font-display mb-6">
                 {t('common.elite')} <span className="gold-text italic">{t('common.selections')}</span>
               </h2>
               <p className="text-luxury-accent font-light">{t('home.featured.desc')}</p>
@@ -321,13 +321,13 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-5xl glass rounded-[3rem] overflow-hidden border-gold/20 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
+              className="relative w-full max-w-5xl glass rounded-2xl md:rounded-[3rem] overflow-hidden border-gold/20 shadow-[0_50px_100px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto"
             >
               <button 
                 onClick={() => setSelectedBook(null)}
-                className="absolute top-8 right-8 p-3 glass rounded-full hover:bg-white/10 transition-colors z-50"
+                className="absolute top-4 right-4 md:top-8 md:right-8 p-2 md:p-3 glass rounded-full hover:bg-white/10 transition-colors z-50"
               >
-                <X size={24} />
+                <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
 
               <div className="grid grid-cols-1 md:grid-cols-2">
@@ -342,14 +342,14 @@ export default function Home() {
                   </div>
                 </div>
                 
-                <div className="p-12 md:p-16 flex flex-col justify-center">
-                  <div className="mb-8">
+                <div className="p-8 md:p-16 flex flex-col justify-center">
+                  <div className="mb-6 md:mb-8">
                     <div className="flex items-center gap-2 text-gold mb-4">
                       <Star size={16} fill="currentColor" />
-                      <span className="font-bold tracking-widest text-xs uppercase">{selectedBook.rating} {t('common.rating')}</span>
+                      <span className="font-bold tracking-widest text-[10px] md:text-xs uppercase">{selectedBook.rating} {t('common.rating')}</span>
                     </div>
-                    <h2 className="text-5xl font-bold tracking-tighter mb-4">{selectedBook.title}</h2>
-                    <p className="text-xl text-luxury-accent italic">{t('common.by')} {selectedBook.author}</p>
+                    <h2 className="text-3xl md:text-5xl font-bold tracking-tighter mb-4">{selectedBook.title}</h2>
+                    <p className="text-lg md:text-xl text-luxury-accent italic">{t('common.by')} {selectedBook.author}</p>
                   </div>
 
                   <p className="text-luxury-accent leading-relaxed mb-12 line-clamp-4">

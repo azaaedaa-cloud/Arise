@@ -85,58 +85,58 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-luxury-black pt-32 pb-20 px-6">
+    <div className="min-h-screen bg-luxury-black pt-24 md:pt-32 pb-20 px-4 md:px-6">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
           {/* Sidebar */}
           <aside className="lg:col-span-3">
-            <div className="luxury-card p-10 sticky top-32">
-              <div className="flex flex-col items-center text-center mb-12">
-                <div className="relative mb-6">
-                  <div className="w-32 h-32 border border-gold/20 p-1 group">
+            <div className="luxury-card p-6 md:p-10 sticky top-32">
+              <div className="flex flex-col items-center text-center mb-8 md:mb-12">
+                <div className="relative mb-4 md:mb-6">
+                  <div className="w-24 h-24 md:w-32 md:h-32 border border-gold/20 p-1 group">
                     <img 
                       src={profile.photoURL || `https://i.pravatar.cc/150?u=${profile.uid}`} 
                       className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                     />
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-gold flex items-center justify-center border border-luxury-black">
-                    <Crown size={14} className="text-black" />
+                  <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 w-6 h-6 md:w-8 md:h-8 bg-gold flex items-center justify-center border border-luxury-black">
+                    <Crown className="text-black w-3 h-3 md:w-3.5 md:h-3.5" />
                   </div>
                 </div>
                 
-                <h2 className="text-2xl font-display mb-2">{profile.displayName}</h2>
-                <p className="text-luxury-accent text-[10px] uppercase tracking-widest font-accent">{profile.email}</p>
+                <h2 className="text-xl md:text-2xl font-display mb-1 md:mb-2">{profile.displayName}</h2>
+                <p className="text-luxury-accent text-[9px] md:text-[10px] uppercase tracking-widest font-accent">{profile.email}</p>
               </div>
               
-              <nav className="space-y-2">
+              <nav className="space-y-1 md:space-y-2">
                 {menuItems.map((item) => (
                   <button 
                     key={item.id}
                     onClick={() => setActiveView(item.id as any)}
-                    className={`w-full flex items-center justify-between px-6 py-4 transition-all group ${activeView === item.id ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white hover:bg-white/5'}`}
+                    className={`w-full flex items-center justify-between px-4 md:px-6 py-3 md:py-4 transition-all group ${activeView === item.id ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white hover:bg-white/5'}`}
                   >
-                    <div className="flex items-center gap-4">
-                      <item.icon size={18} />
-                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] font-accent">{item.label}</span>
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <item.icon className="w-4 h-4 md:w-4.5 md:h-4.5" />
+                      <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] font-accent">{item.label}</span>
                     </div>
-                    <ChevronRight size={14} className={activeView === item.id ? 'text-black' : 'text-gold/30 group-hover:text-gold'} />
+                    <ChevronRight className={`w-3 h-3 md:w-3.5 md:h-3.5 ${activeView === item.id ? 'text-black' : 'text-gold/30 group-hover:text-gold'}`} />
                   </button>
                 ))}
                 
-                <div className="pt-8 mt-8 border-t border-white/5 space-y-2">
+                <div className="pt-6 md:pt-8 mt-6 md:mt-8 border-t border-white/5 space-y-1 md:space-y-2">
                   <button 
                     onClick={() => toast.success("Settings coming soon to elite members.")}
-                    className="w-full flex items-center gap-4 px-6 py-4 text-luxury-accent hover:text-white hover:bg-white/5 transition-all group"
+                    className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-6 py-3 md:py-4 text-luxury-accent hover:text-white hover:bg-white/5 transition-all group"
                   >
-                    <Settings size={18} />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] font-accent">Settings</span>
+                    <Settings className="w-4 h-4 md:w-4.5 md:h-4.5" />
+                    <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] font-accent">Settings</span>
                   </button>
                   <button 
                     onClick={() => signOut(auth)}
-                    className="w-full flex items-center gap-4 px-6 py-4 text-red-500/70 hover:text-red-500 hover:bg-red-500/5 transition-all group"
+                    className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-6 py-3 md:py-4 text-red-500/70 hover:text-red-500 hover:bg-red-500/5 transition-all group"
                   >
-                    <LogOut size={18} />
-                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] font-accent">Sign Out</span>
+                    <LogOut className="w-4 h-4 md:w-4.5 md:h-4.5" />
+                    <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] font-accent">Sign Out</span>
                   </button>
                 </div>
               </nav>
@@ -155,43 +155,43 @@ export default function Profile() {
                   className="space-y-12"
                 >
                   {/* Header */}
-                  <div className="relative p-16 luxury-card overflow-hidden">
-                    <div className="absolute top-0 right-0 p-12 opacity-[0.03] -rotate-12">
-                      <Crown size={300} />
+                  <div className="relative p-8 md:p-16 luxury-card overflow-hidden">
+                    <div className="absolute top-0 right-0 p-8 md:p-12 opacity-[0.03] -rotate-12">
+                      <Crown className="w-50 h-50 md:w-75 md:h-75" />
                     </div>
                     <div className="relative z-10">
-                      <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-6 font-accent">Member Since {new Date(profile.createdAt).getFullYear()}</h4>
-                      <h1 className="text-6xl font-display tracking-tight mb-8 leading-tight">
+                      <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-4 md:mb-6 font-accent">Member Since {new Date(profile.createdAt).getFullYear()}</h4>
+                      <h1 className="text-3xl md:text-6xl font-display tracking-tight mb-6 md:mb-8 leading-tight">
                         WELCOME BACK, <br />
                         <span className="gold-text">SOVEREIGN READER.</span>
                       </h1>
-                      <p className="text-luxury-accent text-xl font-light leading-relaxed max-w-2xl italic">
+                      <p className="text-luxury-accent text-lg md:text-xl font-light leading-relaxed max-w-2xl italic">
                         "Your pursuit of excellence is reflected in your collection. Continue your ascent through the world's most curated masterpieces."
                       </p>
                     </div>
                   </div>
 
                   {/* Stats Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
                     {[
                       { label: "Masterpieces Owned", value: library.length, icon: BookOpen },
                       { label: "Total Acquisitions", value: orders.length, icon: Zap },
                       { label: "Curated Wishlist", value: profile.wishlist.length, icon: Heart },
                     ].map((stat, i) => (
-                      <div key={i} className="luxury-card p-10 flex flex-col items-center text-center group hover:border-gold/30 transition-all">
-                        <div className="w-12 h-12 border border-white/5 flex items-center justify-center text-gold mb-6 group-hover:border-gold transition-colors">
-                          <stat.icon size={20} />
+                      <div key={i} className="luxury-card p-8 md:p-10 flex flex-col items-center text-center group hover:border-gold/30 transition-all">
+                        <div className="w-10 h-10 md:w-12 md:h-12 border border-white/5 flex items-center justify-center text-gold mb-4 md:mb-6 group-hover:border-gold transition-colors">
+                          <stat.icon className="w-4.5 h-4.5 md:w-5 md:h-5" />
                         </div>
-                        <div className="text-4xl font-display mb-2">{stat.value}</div>
-                        <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-luxury-accent font-accent">{stat.label}</div>
+                        <div className="text-3xl md:text-4xl font-display mb-1 md:mb-2">{stat.value}</div>
+                        <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-luxury-accent font-accent">{stat.label}</div>
                       </div>
                     ))}
                   </div>
 
                   {/* Recent Activity or Featured */}
-                  <div className="luxury-card p-12">
-                    <h3 className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold mb-12 font-accent">Recent Acquisitions</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                  <div className="luxury-card p-8 md:p-12">
+                    <h3 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] text-gold mb-8 md:mb-12 font-accent">Recent Acquisitions</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                       {library.slice(0, 4).map((book) => (
                         <div key={book.id} className="group cursor-pointer">
                           <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-4 group-hover:border-gold transition-all">
@@ -221,31 +221,31 @@ export default function Profile() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                 >
-                  <div className="flex items-center justify-between mb-12">
-                    <h2 className="text-4xl font-display">My Library</h2>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{library.length} Masterpieces</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+                    <h2 className="text-3xl md:text-4xl font-display">My Library</h2>
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{library.length} Masterpieces</span>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                     {library.length > 0 ? (
                       library.map((book) => (
                         <motion.div 
                           key={book.id}
                           whileHover={{ y: -10 }}
-                          className="luxury-card p-8 group"
+                          className="luxury-card p-6 md:p-8 group"
                         >
-                          <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-8 group-hover:border-gold transition-all">
+                          <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-6 md:mb-8 group-hover:border-gold transition-all">
                             <img 
                               src={book.coverImage} 
                               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                               referrerPolicy="no-referrer"
                             />
                           </div>
-                          <h3 className="text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
-                          <p className="text-[10px] uppercase tracking-widest text-luxury-accent mb-8 font-accent">{book.author}</p>
+                          <h3 className="text-base md:text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
+                          <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-luxury-accent mb-6 md:mb-8 font-accent">{book.author}</p>
                           <button 
                             onClick={() => navigate(`/book/${book.id}`)}
-                            className="btn-luxury w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em]"
+                            className="btn-luxury w-full py-3 md:py-4 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]"
                           >
                             Read Masterpiece
                           </button>
@@ -268,51 +268,51 @@ export default function Profile() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                 >
-                  <div className="flex items-center justify-between mb-12">
-                    <h2 className="text-4xl font-display">Acquisition History</h2>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{orders.length} Orders</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+                    <h2 className="text-3xl md:text-4xl font-display">Acquisition History</h2>
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{orders.length} Orders</span>
                   </div>
                   
-                  <div className="space-y-8">
+                  <div className="space-y-6 md:space-y-8">
                     {orders.length > 0 ? (
                       orders.map((order) => (
                         <div 
                           key={order.id}
-                          className="luxury-card p-10 group hover:border-gold/30 transition-all"
+                          className="luxury-card p-6 md:p-10 group hover:border-gold/30 transition-all"
                         >
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 mb-12">
-                            <div className="flex items-center gap-6">
-                              <div className="w-16 h-16 border border-white/5 flex items-center justify-center text-gold group-hover:border-gold transition-colors">
-                                <Clock size={24} />
+                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 md:gap-10 mb-8 md:mb-12">
+                            <div className="flex items-center gap-4 md:gap-6">
+                              <div className="w-12 h-12 md:w-16 md:h-16 border border-white/5 flex items-center justify-center text-gold group-hover:border-gold transition-colors">
+                                <Clock className="w-5 h-5 md:w-6 md:h-6" />
                               </div>
                               <div>
-                                <div className="text-[11px] font-bold uppercase tracking-[0.3em] text-white mb-1 font-accent">Order #{order.id.slice(-8).toUpperCase()}</div>
-                                <div className="text-[10px] text-luxury-accent uppercase tracking-widest font-accent">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                <div className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-white mb-1 font-accent">Order #{order.id.slice(-8).toUpperCase()}</div>
+                                <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-widest font-accent">{new Date(order.createdAt).toLocaleDateString()}</div>
                               </div>
                             </div>
                             
-                            <div className="flex items-center gap-12">
-                              <div className="text-right">
-                                <div className="text-[9px] text-luxury-accent uppercase tracking-[0.3em] font-bold mb-2 font-accent">Status</div>
-                                <div className="text-xs font-bold uppercase tracking-widest text-emerald-400">{order.status}</div>
+                            <div className="flex items-center justify-between md:justify-end gap-8 md:gap-12">
+                              <div className="text-left md:text-right">
+                                <div className="text-[8px] md:text-[9px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold mb-1 md:mb-2 font-accent">Status</div>
+                                <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-emerald-400">{order.status}</div>
                               </div>
                               <div className="text-right">
-                                <div className="text-[9px] text-luxury-accent uppercase tracking-[0.3em] font-bold mb-2 font-accent">Investment</div>
-                                <div className="text-2xl font-display text-gold">${order.totalAmount.toFixed(2)}</div>
+                                <div className="text-[8px] md:text-[9px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold mb-1 md:mb-2 font-accent">Investment</div>
+                                <div className="text-xl md:text-2xl font-display text-gold">${order.totalAmount.toFixed(2)}</div>
                               </div>
-                              <ChevronRight className="text-gold/30 group-hover:text-gold transition-colors" />
+                              <ChevronRight className="hidden md:block text-gold/30 group-hover:text-gold transition-colors" />
                             </div>
                           </div>
                           
-                          <div className="flex flex-wrap gap-6">
+                          <div className="flex flex-wrap gap-4 md:gap-6">
                             {order.items.map((item, i) => (
-                              <div key={i} className="flex items-center gap-4 p-3 border border-white/5 hover:border-gold/20 transition-all">
+                              <div key={i} className="flex items-center gap-3 md:gap-4 p-2 md:p-3 border border-white/5 hover:border-gold/20 transition-all">
                                 <img 
                                   src={item.coverImage || `https://picsum.photos/seed/${item.bookId}/50/75`} 
-                                  className="w-10 h-14 object-cover grayscale group-hover:grayscale-0 transition-all"
+                                  className="w-8 h-12 md:w-10 md:h-14 object-cover grayscale group-hover:grayscale-0 transition-all"
                                   referrerPolicy="no-referrer"
                                 />
-                                <div className="text-[10px] font-bold uppercase tracking-widest max-w-[120px] truncate font-accent">{item.title}</div>
+                                <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest max-w-[100px] md:max-w-[120px] truncate font-accent">{item.title}</div>
                               </div>
                             ))}
                           </div>
@@ -334,31 +334,31 @@ export default function Profile() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                 >
-                  <div className="flex items-center justify-between mb-12">
-                    <h2 className="text-4xl font-display">My Wishlist</h2>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{wishlistBooks.length} Masterpieces</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
+                    <h2 className="text-3xl md:text-4xl font-display">My Wishlist</h2>
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold font-accent">{wishlistBooks.length} Masterpieces</span>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                     {wishlistBooks.length > 0 ? (
                       wishlistBooks.map((book) => (
                         <motion.div 
                           key={book.id}
                           whileHover={{ y: -10 }}
-                          className="luxury-card p-8 group"
+                          className="luxury-card p-6 md:p-8 group"
                         >
-                          <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-8 group-hover:border-gold transition-all">
+                          <div className="aspect-[3/4] overflow-hidden border border-white/5 mb-6 md:mb-8 group-hover:border-gold transition-all">
                             <img 
                               src={book.coverImage} 
                               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                               referrerPolicy="no-referrer"
                             />
                           </div>
-                          <h3 className="text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
-                          <p className="text-[10px] uppercase tracking-widest text-luxury-accent mb-8 font-accent">{book.author}</p>
+                          <h3 className="text-base md:text-lg font-display mb-2 group-hover:text-gold transition-colors">{book.title}</h3>
+                          <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-luxury-accent mb-6 md:mb-8 font-accent">{book.author}</p>
                           <button 
                             onClick={() => navigate(`/book/${book.id}`)}
-                            className="btn-luxury w-full py-4 text-[10px] font-bold uppercase tracking-[0.3em]"
+                            className="btn-luxury w-full py-3 md:py-4 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em]"
                           >
                             View Details
                           </button>

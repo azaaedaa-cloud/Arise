@@ -122,22 +122,22 @@ export default function BookDetails() {
   if (!book) return null;
 
   return (
-    <div className="bg-luxury-black min-h-screen text-[#F5F5F5] pt-32 pb-40">
-      <div className="container mx-auto px-6">
+    <div className="bg-luxury-black min-h-screen text-[#F5F5F5] pt-24 md:pt-32 pb-20 md:pb-40">
+      <div className="container mx-auto px-4 md:px-6">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center gap-3 text-gold text-[11px] font-bold uppercase tracking-[0.3em] hover:text-gold-light transition-colors mb-16 font-accent"
+          className="flex items-center gap-3 text-gold text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] hover:text-gold-light transition-colors mb-8 md:mb-16 font-accent"
         >
           <ArrowLeft size={14} className="rtl:rotate-180" />
           {t('common.back')}
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 mb-40">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 mb-20 md:mb-40">
           {/* Book Cover */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative aspect-[3/4] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.6)]"
+            className="relative aspect-[3/4] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6)] md:shadow-[0_50px_100px_rgba(0,0,0,0.6)]"
           >
             <motion.img 
               style={{ y }}
@@ -173,27 +173,27 @@ export default function BookDetails() {
               </div>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-display mb-6 leading-tight max-w-xl">{book.title}</h1>
-            <p className="text-2xl text-luxury-accent mb-12 font-light italic">By {book.author}</p>
+            <h1 className="text-4xl md:text-7xl font-display mb-4 md:mb-6 leading-tight max-w-xl">{book.title}</h1>
+            <p className="text-xl md:text-2xl text-luxury-accent mb-8 md:mb-12 font-light italic">By {book.author}</p>
             
-            <div className="text-5xl font-display text-white mb-12">${book.price}</div>
+            <div className="text-4xl md:text-5xl font-display text-white mb-8 md:mb-12">${book.price}</div>
 
             <p className="text-luxury-accent text-lg leading-relaxed mb-16 font-light max-w-xl">
               {book.description || "Experience a literary journey like no other. This masterpiece combines profound wisdom with captivating storytelling, meticulously curated for our elite readers."}
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-8 mb-16">
-              <div className="flex items-center border border-white/10 p-1 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-8 mb-12 md:mb-16">
+              <div className="flex items-center border border-white/10 p-1 w-full sm:w-auto justify-center">
                 <button 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-14 h-14 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent"
+                  className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent"
                 >
                   -
                 </button>
-                <span className="w-14 text-center font-display text-xl">{quantity}</span>
+                <span className="w-12 md:w-14 text-center font-display text-lg md:text-xl">{quantity}</span>
                 <button 
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-14 h-14 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent"
+                  className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center hover:bg-white/5 transition-colors text-luxury-accent"
                 >
                   +
                 </button>
@@ -229,15 +229,15 @@ export default function BookDetails() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 border-t border-white/5 pt-12">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 border-t border-white/5 pt-8 md:pt-12">
               {[
                 { label: "Secure", icon: Shield, color: "text-gold/60" },
                 { label: "Elite", icon: Crown, color: "text-gold/60" },
                 { label: "Global", icon: Globe, color: "text-gold/60" },
               ].map((feature, i) => (
                 <div key={i} className="text-center">
-                  <feature.icon className={`mx-auto mb-4 ${feature.color}`} size={24} />
-                  <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-luxury-accent font-accent">{feature.label}</div>
+                  <feature.icon className={`mx-auto mb-2 md:mb-4 ${feature.color} w-5 h-5 md:w-6 md:h-6`} />
+                  <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-luxury-accent font-accent">{feature.label}</div>
                 </div>
               ))}
             </div>
@@ -245,21 +245,21 @@ export default function BookDetails() {
         </div>
 
         {/* Reviews Section */}
-        <section className="max-w-4xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-4xl md:text-6xl font-display mb-6">
+        <section className="max-w-4xl mx-auto px-4">
+          <div className="text-center mb-12 md:mb-24">
+            <h2 className="text-3xl md:text-6xl font-display mb-6">
               READER <span className="gold-text italic">REVIEWS</span>
             </h2>
-            <p className="text-luxury-accent font-light uppercase tracking-widest text-xs">Insights from the elite community ({reviews.length})</p>
+            <p className="text-luxury-accent font-light uppercase tracking-widest text-[10px] md:text-xs">Insights from the elite community ({reviews.length})</p>
           </div>
 
           {/* Add Review */}
           {auth.currentUser ? (
-            <form onSubmit={handleAddReview} className="bg-white/[0.02] border border-white/5 p-12 mb-24">
-              <h3 className="text-2xl font-display mb-10">Share your thoughts</h3>
-              <div className="flex items-center gap-6 mb-10">
-                <span className="text-[10px] text-luxury-accent uppercase font-bold tracking-[0.3em] font-accent">Rating</span>
-                <div className="flex gap-3">
+            <form onSubmit={handleAddReview} className="bg-white/[0.02] border border-white/5 p-6 md:p-12 mb-12 md:mb-24">
+              <h3 className="text-xl md:text-2xl font-display mb-6 md:mb-10">Share your thoughts</h3>
+              <div className="flex items-center gap-4 md:gap-6 mb-6 md:mb-10">
+                <span className="text-[9px] md:text-[10px] text-luxury-accent uppercase font-bold tracking-[0.2em] md:tracking-[0.3em] font-accent">Rating</span>
+                <div className="flex gap-2 md:gap-3">
                   {[1, 2, 3, 4, 5].map(star => (
                     <button 
                       key={star}
@@ -267,19 +267,19 @@ export default function BookDetails() {
                       onClick={() => setNewReview({ ...newReview, rating: star })}
                       className={`transition-colors ${newReview.rating >= star ? 'text-gold' : 'text-white/10'}`}
                     >
-                      <Star size={24} fill={newReview.rating >= star ? "currentColor" : "none"} />
+                      <Star className="w-5 h-5 md:w-6 md:h-6" fill={newReview.rating >= star ? "currentColor" : "none"} />
                     </button>
                   ))}
                 </div>
               </div>
               <textarea 
                 placeholder="Write your elite review here..."
-                className="w-full h-40 bg-white/[0.03] border border-white/10 p-8 outline-none focus:border-gold/50 transition-all mb-10 resize-none font-light leading-relaxed"
+                className="w-full h-32 md:h-40 bg-white/[0.03] border border-white/10 p-4 md:p-8 outline-none focus:border-gold/50 transition-all mb-6 md:mb-10 resize-none font-light leading-relaxed text-sm"
                 value={newReview.comment}
                 onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                 required
               />
-              <button type="submit" className="btn-luxury px-12 flex items-center gap-4">
+              <button type="submit" className="btn-luxury px-8 md:px-12 flex items-center gap-4">
                 Post Review <Send size={16} />
               </button>
             </form>
@@ -302,18 +302,18 @@ export default function BookDetails() {
                   transition={{ delay: i * 0.1 }}
                   className="bg-white/[0.02] border border-white/5 p-12"
                 >
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 border border-gold/20 flex items-center justify-center font-display text-2xl text-gold">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <div className="w-12 h-12 md:w-14 md:h-14 border border-gold/20 flex items-center justify-center font-display text-xl md:text-2xl text-gold">
                         {review.userName[0]}
                       </div>
                       <div>
-                        <div className="text-lg font-display mb-1">{review.userName}</div>
-                        <div className="text-[10px] text-luxury-accent uppercase tracking-widest font-light">{new Date(review.createdAt).toLocaleDateString()}</div>
+                        <div className="text-base md:text-lg font-display mb-1">{review.userName}</div>
+                        <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-widest font-light">{new Date(review.createdAt).toLocaleDateString()}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-1 text-gold">
-                      {Array(review.rating).fill(0).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                      {Array(review.rating).fill(0).map((_, i) => <Star key={i} className="w-3 h-3 md:w-3.5 md:h-3.5" fill="currentColor" />)}
                     </div>
                   </div>
                   <p className="text-luxury-accent leading-relaxed font-light text-lg italic">"{review.comment}"</p>
@@ -337,29 +337,29 @@ export default function BookDetails() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] flex flex-col bg-luxury-black"
           >
-            <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 bg-luxury-black/80 backdrop-blur-xl">
-              <div className="flex items-center gap-6">
-                <div className="w-10 h-14 border border-gold/30 overflow-hidden">
+            <div className="flex items-center justify-between px-4 md:px-8 py-4 md:py-6 border-b border-white/10 bg-luxury-black/80 backdrop-blur-xl">
+              <div className="flex items-center gap-4 md:gap-6">
+                <div className="w-8 h-10 md:w-10 md:h-14 border border-gold/30 overflow-hidden">
                   <img src={book.coverImage} className="w-full h-full object-cover" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-display">{book.title}</h2>
-                  <p className="text-[10px] uppercase tracking-widest text-gold font-accent">{book.author}</p>
+                  <h2 className="text-lg md:text-xl font-display line-clamp-1">{book.title}</h2>
+                  <p className="text-[9px] md:text-[10px] uppercase tracking-widest text-gold font-accent">{book.author}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 md:gap-6">
                 <button 
                   onClick={() => window.open(book.pdfUrl, '_blank')}
-                  className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"
+                  className="p-2 md:p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"
                   title="Open in New Tab"
                 >
-                  <Maximize2 size={20} />
+                  <Maximize2 className="w-4.5 h-4.5 md:w-5 md:h-5" />
                 </button>
                 <button 
                   onClick={() => setShowReader(false)}
-                  className="p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"
+                  className="p-2 md:p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"
                 >
-                  <X size={20} />
+                  <X className="w-4.5 h-4.5 md:w-5 md:h-5" />
                 </button>
               </div>
             </div>

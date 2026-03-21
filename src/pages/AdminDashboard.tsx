@@ -289,6 +289,10 @@ export default function AdminDashboard() {
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const filteredOrders = orders.filter(order => 
+    order.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const getAnalyticsData = () => {
     // Sales Trends (last 7 days)
     const last7Days = [...Array(7)].map((_, i) => {
@@ -393,46 +397,46 @@ export default function AdminDashboard() {
   if (userRole === 'user') return null;
 
   return (
-    <div className="min-h-screen bg-luxury-black pt-32 pb-20 px-6">
+    <div className="min-h-screen bg-luxury-black pt-24 md:pt-32 pb-20 px-4 md:px-6">
       <div className="container mx-auto">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 md:gap-12 mb-12 md:mb-20">
           <div>
-            <h4 className="text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-6 font-accent">System Control</h4>
-            <h1 className="text-6xl font-display tracking-tight leading-tight flex items-center gap-6">
-              {userRole === 'super_admin' ? <Crown className="text-gold" size={48} /> : <LayoutDashboard className="text-gold" size={48} />}
+            <h4 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.4em] text-gold mb-4 md:mb-6 font-accent">System Control</h4>
+            <h1 className="text-3xl md:text-6xl font-display tracking-tight leading-tight flex items-center gap-4 md:gap-6">
+              {userRole === 'super_admin' ? <Crown className="text-gold w-8 h-8 md:w-12 md:h-12" /> : <LayoutDashboard className="text-gold w-8 h-8 md:w-12 md:h-12" />}
               {userRole === 'super_admin' ? 'SUPER' : 'ELITE'} <span className="gold-text">DASHBOARD</span>
             </h1>
-            <p className="text-luxury-accent mt-6 text-lg italic font-light max-w-2xl">
+            <p className="text-luxury-accent mt-4 md:mt-6 text-base md:text-lg italic font-light max-w-2xl">
               {auth.currentUser?.email === 'azaaedaa@gmail.com' 
                 ? '"Welcome back, Architect. The empire is yours to command."' 
                 : '"Command the flow of knowledge and power with absolute precision."'}
             </p>
           </div>
           
-          <div className="flex flex-wrap items-center gap-6">
-            <button onClick={seedData} className="text-[10px] font-bold uppercase tracking-widest text-luxury-accent hover:text-gold transition-colors font-accent border border-white/10 px-6 py-3">Seed Data</button>
+          <div className="flex flex-wrap items-center gap-4 md:gap-6">
+            <button onClick={seedData} className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent hover:text-gold transition-colors font-accent border border-white/10 px-4 md:px-6 py-2 md:py-3">Seed Data</button>
             <button 
               onClick={() => {
                 const url = `${window.location.origin}/auth`;
                 navigator.clipboard.writeText(url);
                 toast.success("Registration link copied. Ask the new admin to sign up, then promote them here.");
               }}
-              className="text-[10px] font-bold uppercase tracking-widest text-luxury-accent hover:text-gold transition-colors font-accent border border-white/10 px-6 py-3 flex items-center gap-2"
+              className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent hover:text-gold transition-colors font-accent border border-white/10 px-4 md:px-6 py-2 md:py-3 flex items-center gap-2"
             >
-              <Plus size={14} />
+              <Plus className="w-3 h-3 md:w-3.5 md:h-3.5" />
               Invite Admin
             </button>
-            <div className="border border-white/10 p-1 flex">
+            <div className="border border-white/10 p-1 flex flex-wrap">
               <button 
                 onClick={() => setActiveTab('products')}
-                className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'products' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
+                className={`px-4 md:px-6 py-2 md:py-3 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'products' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
               >
                 Products
               </button>
               {(userRole === 'admin' || userRole === 'super_admin') && (
                 <button 
                   onClick={() => setActiveTab('users')}
-                  className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'users' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
+                  className={`px-4 md:px-6 py-2 md:py-3 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'users' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
                 >
                   Users
                 </button>
@@ -440,7 +444,7 @@ export default function AdminDashboard() {
               {hasAccess('manageOrders') && (
                 <button 
                   onClick={() => setActiveTab('orders')}
-                  className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'orders' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
+                  className={`px-4 md:px-6 py-2 md:py-3 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'orders' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
                 >
                   Orders
                 </button>
@@ -448,156 +452,154 @@ export default function AdminDashboard() {
               {hasAccess('viewAnalytics') && (
                 <button 
                   onClick={() => setActiveTab('analytics')}
-                  className={`px-6 py-3 text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'analytics' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
+                  className={`px-4 md:px-6 py-2 md:py-3 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all font-accent ${activeTab === 'analytics' ? 'bg-gold text-black' : 'text-luxury-accent hover:text-white'}`}
                 >
                   Analytics
                 </button>
               )}
             </div>
             {hasAccess('manageProducts') && (
-              <button onClick={() => setIsAdding(true)} className="btn-luxury flex items-center gap-3 px-8 py-4">
-                <Plus size={20} />
-                <span className="text-[11px] font-bold uppercase tracking-[0.3em]">Add Masterpiece</span>
+              <button 
+                onClick={() => {
+                  setEditingId(null);
+                  setFormData({ 
+                    title: '', 
+                    author: '', 
+                    description: '', 
+                    price: 0, 
+                    category: 'Fiction', 
+                    stock: 10, 
+                    isDigital: false, 
+                    tier: 'growth', 
+                    coverImage: '', 
+                    pdfUrl: '' 
+                  });
+                  setIsAdding(true);
+                }} 
+                className="btn-luxury flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 w-full sm:w-auto justify-center"
+              >
+                <Plus className="w-4.5 h-4.5 md:w-5 md:h-5" />
+                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">Add Masterpiece</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Search & Filter Bar */}
-        {(activeTab === 'products' || activeTab === 'users') && (
-          <div className="flex flex-col md:flex-row gap-6 mb-12">
-            <div className="flex-1 relative">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gold/50" size={18} />
-              <input 
-                type="text" 
-                placeholder={`Search ${activeTab}...`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 pl-16 pr-6 py-4 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest"
-              />
-            </div>
-            {activeTab === 'products' && (
-              <div className="flex items-center gap-4 border border-white/10 px-6 py-4">
-                <Filter size={18} className="text-gold/50" />
-                <select 
-                  value={filterTier}
-                  onChange={(e) => setFilterTier(e.target.value)}
-                  className="bg-transparent text-[10px] font-bold uppercase tracking-widest outline-none cursor-pointer font-accent"
-                >
-                  <option value="all">All Tiers</option>
-                  <option value="poverty">Poverty</option>
-                  <option value="growth">Growth</option>
-                  <option value="wealth">Wealth</option>
-                  <option value="power">Power</option>
-                </select>
-              </div>
-            )}
-          </div>
-        )}
-
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
-          <div className="luxury-card p-10">
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-12 h-12 border border-gold/20 flex items-center justify-center text-gold">
-                <ShoppingBag size={24} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12 md:mb-20">
+          <div className="luxury-card p-8 md:p-10">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 border border-gold/20 flex items-center justify-center text-gold">
+                <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <span className="text-[10px] font-bold text-green-500 uppercase tracking-[0.3em] font-accent">+12%</span>
+              <span className="text-[9px] md:text-[10px] font-bold text-green-500 uppercase tracking-[0.3em] font-accent">+12%</span>
             </div>
-            <div className="text-4xl font-display mb-2">{books.length}</div>
-            <div className="text-[10px] text-luxury-accent uppercase tracking-[0.3em] font-bold font-accent">Total Masterpieces</div>
+            <div className="text-3xl md:text-4xl font-display mb-1 md:mb-2">{books.length}</div>
+            <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold font-accent">Total Masterpieces</div>
           </div>
           
-          <div className="luxury-card p-10">
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-12 h-12 border border-gold/20 flex items-center justify-center text-gold">
-                <Users size={24} />
+          <div className="luxury-card p-8 md:p-10">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 border border-gold/20 flex items-center justify-center text-gold">
+                <Users className="w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <span className="text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Active</span>
+              <span className="text-[9px] md:text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Active</span>
             </div>
-            <div className="text-4xl font-display mb-2">{users.length || '---'}</div>
-            <div className="text-[10px] text-luxury-accent uppercase tracking-[0.3em] font-bold font-accent">Elite Members</div>
+            <div className="text-3xl md:text-4xl font-display mb-1 md:mb-2">{users.length || '---'}</div>
+            <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold font-accent">Elite Members</div>
           </div>
           
-          <div className="luxury-card p-10">
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-12 h-12 border border-gold/20 flex items-center justify-center text-gold">
-                <BarChart3 size={24} />
+          <div className="luxury-card p-8 md:p-10">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 border border-gold/20 flex items-center justify-center text-gold">
+                <BarChart3 className="w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <span className="text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Revenue</span>
+              <span className="text-[9px] md:text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Revenue</span>
             </div>
-            <div className="text-4xl font-display mb-2">$12.4K</div>
-            <div className="text-[10px] text-luxury-accent uppercase tracking-[0.3em] font-bold font-accent">Total Sales</div>
+            <div className="text-3xl md:text-4xl font-display mb-1 md:mb-2">$12.4K</div>
+            <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold font-accent">Total Sales</div>
           </div>
           
-          <div className="luxury-card p-10">
-            <div className="flex items-center justify-between mb-8">
-              <div className="w-12 h-12 border border-gold/20 flex items-center justify-center text-gold">
-                <Star size={24} />
+          <div className="luxury-card p-8 md:p-10">
+            <div className="flex items-center justify-between mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 border border-gold/20 flex items-center justify-center text-gold">
+                <Star className="w-5 h-5 md:w-6 md:h-6" />
               </div>
-              <span className="text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Top Rated</span>
+              <span className="text-[9px] md:text-[10px] font-bold text-gold uppercase tracking-[0.3em] font-accent">Top Rated</span>
             </div>
-            <div className="text-4xl font-display mb-2">4.9</div>
-            <div className="text-[10px] text-luxury-accent uppercase tracking-[0.3em] font-bold font-accent">Avg. Satisfaction</div>
+            <div className="text-3xl md:text-4xl font-display mb-1 md:mb-2">4.9</div>
+            <div className="text-[9px] md:text-[10px] text-luxury-accent uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold font-accent">Avg. Satisfaction</div>
           </div>
         </div>
 
       {activeTab === 'products' ? (
         <div className="luxury-card overflow-hidden">
-          <div className="p-10 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-2xl font-display">Collection Management</h2>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gold font-accent">{filteredBooks.length} Masterpieces</div>
+          <div className="p-6 md:p-10 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <h2 className="text-xl md:text-2xl font-display">Collection Management</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Search Masterpieces..." 
+                  className="w-full bg-white/5 border border-white/10 p-3 pl-12 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gold font-accent whitespace-nowrap">{filteredBooks.length} Masterpieces</div>
+            </div>
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-white/5 text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">
+            <table className="w-full text-left min-w-[800px]">
+              <thead className="bg-white/5 text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-luxury-accent font-accent">
                 <tr>
-                  <th className="px-10 py-8">Masterpiece</th>
-                  <th className="px-10 py-8">Tier</th>
-                  <th className="px-10 py-8">Price</th>
-                  <th className="px-10 py-8">Stock</th>
-                  <th className="px-10 py-8 text-right">Actions</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Masterpiece</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Tier</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Price</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Stock</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {loading ? (
                   Array(5).fill(0).map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td colSpan={5} className="px-10 py-12"><div className="h-4 bg-white/5 rounded w-full" /></td>
+                      <td colSpan={5} className="px-6 md:px-10 py-10 md:py-12"><div className="h-4 bg-white/5 rounded w-full" /></td>
                     </tr>
                   ))
                 ) : filteredBooks.map((book) => (
                   <tr key={book.id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-10 py-8">
-                      <div className="flex items-center gap-6">
-                        <div className="w-12 h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
+                    <td className="px-6 md:px-10 py-6 md:py-8">
+                      <div className="flex items-center gap-4 md:gap-6">
+                        <div className="w-10 h-14 md:w-12 md:h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
                           <img src={book.coverImage || `https://picsum.photos/seed/${book.id}/100/150`} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" referrerPolicy="no-referrer" />
                         </div>
                         <div>
-                          <div className="text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
+                          <div className="text-base md:text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
+                          <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-10 py-8">
-                      <span className="text-[9px] font-bold border border-gold/20 text-gold px-3 py-1 uppercase tracking-widest font-accent">
+                    <td className="px-6 md:px-10 py-6 md:py-8">
+                      <span className="text-[8px] md:text-[9px] font-bold border border-gold/20 text-gold px-2 md:px-3 py-1 uppercase tracking-widest font-accent">
                         {book.tier}
                       </span>
                     </td>
-                    <td className="px-10 py-8 font-display text-lg">${book.price}</td>
-                    <td className="px-10 py-8">
-                      <div className="flex items-center gap-3 font-accent text-sm tracking-widest">
+                    <td className="px-6 md:px-10 py-6 md:py-8 font-display text-base md:text-lg text-gold">${book.price}</td>
+                    <td className="px-6 md:px-10 py-6 md:py-8">
+                      <div className="flex items-center gap-2 md:gap-3 font-accent text-xs md:text-sm tracking-widest">
                         {book.stock}
                         {book.stock < 5 && <AlertTriangle size={14} className="text-red-500 animate-pulse" />}
                       </div>
                     </td>
-                    <td className="px-10 py-8 text-right">
-                      <div className="flex items-center justify-end gap-4">
+                    <td className="px-6 md:px-10 py-6 md:py-8 text-right">
+                      <div className="flex items-center justify-end gap-2 md:gap-4">
                         {hasAccess('manageProducts') && (
                           <>
-                            <button onClick={() => { setEditingId(book.id); setFormData(book); setIsAdding(true); }} className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><Edit2 size={16} /></button>
-                            <button onClick={() => handleDelete(book.id)} className="p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"><Trash2 size={16} /></button>
+                            <button onClick={() => { setEditingId(book.id); setFormData(book); setIsAdding(true); }} className="p-2 md:p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
+                            <button onClick={() => handleDelete(book.id)} className="p-2 md:p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"><Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
                           </>
                         )}
                       </div>
@@ -610,38 +612,50 @@ export default function AdminDashboard() {
         </div>
       ) : activeTab === 'users' ? (
         <div className="luxury-card overflow-hidden">
-          <div className="p-10 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-2xl font-display">User Management</h2>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gold font-accent">{filteredUsers.length} Elite Members</div>
+          <div className="p-6 md:p-10 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <h2 className="text-xl md:text-2xl font-display">User Management</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Search Members..." 
+                  className="w-full bg-white/5 border border-white/10 p-3 pl-12 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gold font-accent whitespace-nowrap">{filteredUsers.length} Elite Members</div>
+            </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-white/5 text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">
+            <table className="w-full text-left min-w-[900px]">
+              <thead className="bg-white/5 text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-luxury-accent font-accent">
                 <tr>
-                  <th className="px-10 py-8">User</th>
-                  <th className="px-10 py-8">Role & Permissions</th>
-                  <th className="px-10 py-8">Joined</th>
-                  <th className="px-10 py-8 text-right">Actions</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">User</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Role & Permissions</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Joined</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {filteredUsers.map((user) => (
                   <tr key={user.uid} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-10 py-8">
-                      <div className="flex items-center gap-6">
-                        <div className="w-12 h-12 border border-gold/20 flex items-center justify-center font-display text-xl text-gold">{user.displayName ? user.displayName[0] : '?'}</div>
+                    <td className="px-6 md:px-10 py-6 md:py-8">
+                      <div className="flex items-center gap-4 md:gap-6">
+                        <div className="w-10 h-10 md:w-12 md:h-12 border border-gold/20 flex items-center justify-center font-display text-lg md:text-xl text-gold">{user.displayName ? user.displayName[0] : '?'}</div>
                         <div>
-                          <div className="text-lg font-display">{user.displayName || 'Elite Member'}</div>
-                          <div className="text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{user.email}</div>
+                          <div className="text-base md:text-lg font-display">{user.displayName || 'Elite Member'}</div>
+                          <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{user.email}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-10 py-8">
+                    <td className="px-6 md:px-10 py-6 md:py-8">
                       <div className="flex flex-col gap-4">
                         <select 
                           value={user.role}
                           onChange={(e) => handleUpdateUserRole(user.uid, e.target.value as UserRole)}
-                          className="bg-transparent text-gold font-bold text-[10px] uppercase tracking-widest outline-none cursor-pointer font-accent"
+                          className="bg-transparent text-gold font-bold text-[9px] md:text-[10px] uppercase tracking-widest outline-none cursor-pointer font-accent"
                           disabled={user.uid === auth.currentUser?.uid || !hasAccess('manageUsers')}
                         >
                           <option value="user">User</option>
@@ -662,7 +676,7 @@ export default function AdminDashboard() {
                               <button 
                                 key={perm.id}
                                 onClick={() => handleUpdateUserPermissions(user.uid, { [perm.id]: !user.permissions?.[perm.id as keyof UserPermissions] })}
-                                className={`text-[8px] px-2 py-1 border transition-all uppercase tracking-widest font-accent ${user.permissions?.[perm.id as keyof UserPermissions] ? 'bg-gold/10 border-gold text-gold' : 'border-white/5 text-luxury-accent'}`}
+                                className={`text-[7px] md:text-[8px] px-2 py-1 border transition-all uppercase tracking-widest font-accent ${user.permissions?.[perm.id as keyof UserPermissions] ? 'bg-gold/10 border-gold text-gold' : 'border-white/5 text-luxury-accent'}`}
                               >
                                 {perm.label}
                               </button>
@@ -671,22 +685,23 @@ export default function AdminDashboard() {
                         )}
                       </div>
                     </td>
-                    <td className="px-10 py-8 text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{new Date(user.createdAt).toLocaleDateString()}</td>
-                    <td className="px-10 py-8 text-right">
-                      <div className="flex items-center justify-end gap-4">
+                    <td className="px-6 md:px-10 py-6 md:py-8 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 md:px-10 py-6 md:py-8 text-right">
+                      <div className="flex items-center justify-end gap-2 md:gap-4">
                         {hasAccess('manageUsers') && (
-                          <button onClick={() => { setSelectedUserForGrant(user); setIsGranting(true); }} className="px-6 py-3 border border-white/5 hover:border-gold hover:text-gold transition-all flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest font-accent">
-                            <BookOpen size={16} />
-                            Grant Access
+                          <button onClick={() => { setSelectedUserForGrant(user); setIsGranting(true); }} className="px-4 md:px-6 py-2 md:py-3 border border-white/5 hover:border-gold hover:text-gold transition-all flex items-center gap-2 md:gap-3 text-[9px] md:text-[10px] font-bold uppercase tracking-widest font-accent">
+                            <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            <span className="hidden sm:inline">Grant Access</span>
+                            <span className="sm:hidden">Grant</span>
                           </button>
                         )}
                         {user.uid !== auth.currentUser?.uid && userRole === 'super_admin' && (
                           <button 
                             onClick={() => handleDeleteUser(user.uid)}
-                            className="p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"
+                            className="p-2 md:p-3 border border-white/5 hover:border-red-500 hover:text-red-500 transition-all"
                             title="إزالة المستخدم تماماً"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                           </button>
                         )}
                       </div>
@@ -699,39 +714,51 @@ export default function AdminDashboard() {
         </div>
       ) : activeTab === 'orders' ? (
         <div className="luxury-card overflow-hidden">
-          <div className="p-10 border-b border-white/5 flex items-center justify-between">
-            <h2 className="text-2xl font-display">Order Management</h2>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-gold font-accent">{orders.length} Total Orders</div>
+          <div className="p-6 md:p-10 border-b border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <h2 className="text-xl md:text-2xl font-display">Order Management</h2>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="Search Orders..." 
+                  className="w-full bg-white/5 border border-white/10 p-3 pl-12 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-gold font-accent whitespace-nowrap">{filteredOrders.length} Total Orders</div>
+            </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-white/5 text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">
+            <table className="w-full text-left min-w-[900px]">
+              <thead className="bg-white/5 text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-luxury-accent font-accent">
                 <tr>
-                  <th className="px-10 py-8">Order ID</th>
-                  <th className="px-10 py-8">Items</th>
-                  <th className="px-10 py-8">Total</th>
-                  <th className="px-10 py-8">Status</th>
-                  <th className="px-10 py-8">Date</th>
-                  <th className="px-10 py-8 text-right">Actions</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Order ID</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Items</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Total</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Status</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8">Date</th>
+                  <th className="px-6 md:px-10 py-6 md:py-8 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {orders.map((order) => (
+                {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-white/5 transition-colors group">
-                    <td className="px-10 py-8 font-accent text-[10px] text-gold tracking-widest">#{order.id.slice(0, 8)}</td>
-                    <td className="px-10 py-8">
+                    <td className="px-6 md:px-10 py-6 md:py-8 font-accent text-[9px] md:text-[10px] text-gold tracking-widest">#{order.id.slice(0, 8).toUpperCase()}</td>
+                    <td className="px-6 md:px-10 py-6 md:py-8">
                       <div className="flex flex-col gap-2">
                         {order.items.map((item, idx) => (
-                          <div key={idx} className="text-[11px] font-light tracking-widest uppercase">{item.quantity}x {item.title}</div>
+                          <div key={idx} className="text-[10px] md:text-[11px] font-light tracking-widest uppercase">{item.quantity}x {item.title}</div>
                         ))}
                       </div>
                     </td>
-                    <td className="px-10 py-8 font-display text-lg">${order.totalAmount}</td>
-                    <td className="px-10 py-8">
+                    <td className="px-6 md:px-10 py-6 md:py-8 font-display text-base md:text-lg text-gold">${order.totalAmount}</td>
+                    <td className="px-6 md:px-10 py-6 md:py-8">
                       <select 
                         value={order.status}
                         onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                        className="bg-transparent text-gold font-bold text-[10px] uppercase tracking-widest outline-none cursor-pointer font-accent"
+                        className="bg-transparent text-gold font-bold text-[9px] md:text-[10px] uppercase tracking-widest outline-none cursor-pointer font-accent"
                         disabled={!hasAccess('manageOrders')}
                       >
                         <option value="pending">Pending</option>
@@ -741,10 +768,10 @@ export default function AdminDashboard() {
                         <option value="cancelled">Cancelled</option>
                       </select>
                     </td>
-                    <td className="px-10 py-8 text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{new Date(order.createdAt).toLocaleDateString()}</td>
-                    <td className="px-10 py-8 text-right">
+                    <td className="px-6 md:px-10 py-6 md:py-8 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 md:px-10 py-6 md:py-8 text-right">
                       {hasAccess('manageOrders') && (
-                        <button className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><Edit2 size={16} /></button>
+                        <button className="p-2 md:p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" /></button>
                       )}
                     </td>
                   </tr>
@@ -754,14 +781,14 @@ export default function AdminDashboard() {
           </div>
         </div>
       ) : (
-        <div className="space-y-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="luxury-card p-12">
-              <h3 className="text-2xl font-display mb-12 flex items-center gap-4">
-                <TrendingUp className="text-gold" />
+        <div className="space-y-12 md:space-y-20">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 md:gap-12">
+            <div className="luxury-card p-8 md:p-12">
+              <h3 className="text-xl md:text-2xl font-display mb-8 md:mb-12 flex items-center gap-3 md:gap-4">
+                <TrendingUp className="text-gold w-5 h-5 md:w-6 md:h-6" />
                 Sales Trends
               </h3>
-              <div className="h-80 w-full">
+              <div className="h-64 md:h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={analytics.sales}>
                     <defs>
@@ -783,12 +810,12 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="luxury-card p-12">
-              <h3 className="text-2xl font-display mb-12 flex items-center gap-4">
-                <Users className="text-gold" />
+            <div className="luxury-card p-8 md:p-12">
+              <h3 className="text-xl md:text-2xl font-display mb-8 md:mb-12 flex items-center gap-3 md:gap-4">
+                <Users className="text-gold w-5 h-5 md:w-6 md:h-6" />
                 User Growth
               </h3>
-              <div className="h-80 w-full">
+              <div className="h-64 md:h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analytics.growth}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
@@ -805,9 +832,9 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-1 luxury-card p-12">
-              <h3 className="text-2xl font-display mb-12">Category Distribution</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+            <div className="lg:col-span-1 luxury-card p-8 md:p-12">
+              <h3 className="text-xl md:text-2xl font-display mb-8 md:mb-12">Category Distribution</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -843,24 +870,24 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="lg:col-span-2 luxury-card p-12">
-              <h3 className="text-2xl font-display mb-12">Popular Masterpieces</h3>
+            <div className="lg:col-span-2 luxury-card p-8 md:p-12">
+              <h3 className="text-xl md:text-2xl font-display mb-8 md:mb-12">Popular Masterpieces</h3>
               <div className="space-y-8">
                 {books.slice(0, 4).map((book, i) => (
                   <div key={i} className="flex items-center justify-between group">
-                    <div className="flex items-center gap-6">
-                      <div className="text-xl font-display text-gold/30">0{i+1}</div>
-                      <div className="w-12 h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <div className="text-lg md:text-xl font-display text-gold/30">0{i+1}</div>
+                      <div className="w-10 h-14 md:w-12 md:h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
                         <img src={book.coverImage} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       </div>
                       <div>
-                        <div className="text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
+                        <div className="text-base md:text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
+                        <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xl font-display text-gold">${(book.price * 12).toFixed(2)}</div>
-                      <div className="text-[9px] text-luxury-accent uppercase tracking-widest font-bold font-accent">Total Sales</div>
+                      <div className="text-lg md:text-xl font-display text-gold">${(book.price * 12).toFixed(2)}</div>
+                      <div className="text-[8px] md:text-[9px] text-luxury-accent uppercase tracking-widest font-bold font-accent">Total Sales</div>
                     </div>
                   </div>
                 ))}
@@ -873,25 +900,25 @@ export default function AdminDashboard() {
       {/* Add/Edit Modal */}
       <AnimatePresence>
         {isAdding && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAdding(false)} className="absolute inset-0 bg-luxury-black/95 backdrop-blur-md" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-3xl luxury-card p-16 border-gold/30 overflow-hidden">
-              <div className="flex items-center justify-between mb-16">
-                <h2 className="text-4xl font-display">{editingId ? 'Edit Masterpiece' : 'Add New Masterpiece'}</h2>
-                <button onClick={() => setIsAdding(false)} className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><X size={20} /></button>
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-3xl luxury-card p-8 md:p-16 border-gold/30 overflow-y-auto max-h-[90vh] custom-scrollbar">
+              <div className="flex items-center justify-between mb-10 md:mb-16">
+                <h2 className="text-2xl md:text-4xl font-display">{editingId ? 'Edit Masterpiece' : 'Add New Masterpiece'}</h2>
+                <button onClick={() => setIsAdding(false)} className="p-2 md:p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><X className="w-4.5 h-4.5 md:w-5 md:h-5" /></button>
               </div>
-              <form onSubmit={handleSave} className="grid grid-cols-2 gap-10">
-                <div className="col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Title</label>
-                  <input type="text" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
+              <form onSubmit={handleSave} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                <div className="md:col-span-2">
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Title</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-xs md:text-sm tracking-widest" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Author</label>
-                  <input type="text" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} required />
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Author</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-xs md:text-sm tracking-widest" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Tier</label>
-                  <select className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest appearance-none cursor-pointer" value={formData.tier} onChange={(e) => setFormData({...formData, tier: e.target.value as any})}>
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Tier</label>
+                  <select className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest appearance-none cursor-pointer" value={formData.tier} onChange={(e) => setFormData({...formData, tier: e.target.value as any})}>
                     <option value="poverty">Poverty (Foundation)</option>
                     <option value="growth">Growth (Struggle)</option>
                     <option value="wealth">Wealth (Accumulation)</option>
@@ -899,16 +926,16 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Price ($)</label>
-                  <input type="number" step="0.01" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.price} onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})} required />
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Price ($)</label>
+                  <input type="number" step="0.01" className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-xs md:text-sm tracking-widest" value={formData.price} onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Stock</label>
-                  <input type="number" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.stock} onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value)})} required />
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Stock</label>
+                  <input type="number" className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-xs md:text-sm tracking-widest" value={formData.stock} onChange={(e) => setFormData({...formData, stock: parseInt(e.target.value)})} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Category</label>
-                  <select className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-[10px] uppercase tracking-widest appearance-none cursor-pointer" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Category</label>
+                  <select className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest appearance-none cursor-pointer" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                     <option value="Fiction">Fiction</option>
                     <option value="Non-Fiction">Non-Fiction</option>
                     <option value="Digital">Digital</option>
@@ -919,31 +946,31 @@ export default function AdminDashboard() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Format</label>
-                  <div className="flex items-center gap-6 h-[60px]">
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Format</label>
+                  <div className="flex items-center gap-4 md:gap-6 h-[50px] md:h-[60px]">
                     <button 
                       type="button"
                       onClick={() => setFormData({...formData, isDigital: true})}
-                      className={`flex-1 h-full border transition-all font-accent text-[10px] uppercase tracking-widest ${formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
+                      className={`flex-1 h-full border transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest ${formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
                     >
                       Digital
                     </button>
                     <button 
                       type="button"
                       onClick={() => setFormData({...formData, isDigital: false})}
-                      className={`flex-1 h-full border transition-all font-accent text-[10px] uppercase tracking-widest ${!formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
+                      className={`flex-1 h-full border transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest ${!formData.isDigital ? 'bg-gold text-black border-gold' : 'border-white/10 text-luxury-accent hover:border-gold/50'}`}
                     >
                       Physical
                     </button>
                   </div>
                 </div>
-                <div className="col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Cover Image URL (Optional if uploading)</label>
-                  <input type="text" className="w-full bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all font-accent text-sm tracking-widest" value={formData.coverImage} onChange={(e) => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." />
+                <div className="md:col-span-2">
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Cover Image URL (Optional if uploading)</label>
+                  <input type="text" className="w-full bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all font-accent text-xs md:text-sm tracking-widest" value={formData.coverImage} onChange={(e) => setFormData({...formData, coverImage: e.target.value})} placeholder="https://..." />
                 </div>
-                <div className="col-span-2 grid grid-cols-2 gap-10">
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10">
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Upload Cover Image</label>
+                    <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Upload Cover Image</label>
                     <div className="relative group">
                       <input 
                         type="file" 
@@ -954,15 +981,15 @@ export default function AdminDashboard() {
                       />
                       <label 
                         htmlFor="cover-upload"
-                        className="flex items-center justify-center gap-4 w-full bg-white/5 border border-white/10 p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                        className="flex items-center justify-center gap-3 md:gap-4 w-full bg-white/5 border border-white/10 p-4 md:p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest"
                       >
-                        {coverFile ? <Check size={16} className="text-green-500" /> : <ImageIcon size={16} className="text-gold" />}
-                        {coverFile ? coverFile.name : 'Choose Image'}
+                        {coverFile ? <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500" /> : <ImageIcon className="w-3.5 h-3.5 md:w-4 md:h-4 text-gold" />}
+                        <span className="truncate">{coverFile ? coverFile.name : 'Choose Image'}</span>
                       </label>
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Upload PDF Book</label>
+                    <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Upload PDF Book</label>
                     <div className="relative group">
                       <input 
                         type="file" 
@@ -973,30 +1000,30 @@ export default function AdminDashboard() {
                       />
                       <label 
                         htmlFor="pdf-upload"
-                        className="flex items-center justify-center gap-4 w-full bg-white/5 border border-white/10 p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[10px] uppercase tracking-widest"
+                        className="flex items-center justify-center gap-3 md:gap-4 w-full bg-white/5 border border-white/10 p-4 md:p-5 cursor-pointer group-hover:border-gold transition-all font-accent text-[9px] md:text-[10px] uppercase tracking-widest"
                       >
-                        {pdfFile ? <Check size={16} className="text-green-500" /> : <FileText size={16} className="text-gold" />}
-                        {pdfFile ? pdfFile.name : 'Choose PDF'}
+                        {pdfFile ? <Check className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500" /> : <FileText className="w-3.5 h-3.5 md:w-4 md:h-4 text-gold" />}
+                        <span className="truncate">{pdfFile ? pdfFile.name : 'Choose PDF'}</span>
                       </label>
                     </div>
                   </div>
                 </div>
-                <div className="col-span-2">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-4 block font-accent">Description</label>
-                  <textarea className="w-full h-40 bg-white/5 border border-white/10 p-5 outline-none focus:border-gold transition-all resize-none font-accent text-sm tracking-widest leading-relaxed" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+                <div className="md:col-span-2">
+                  <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3 md:mb-4 block font-accent">Description</label>
+                  <textarea className="w-full h-32 md:h-40 bg-white/5 border border-white/10 p-4 md:p-5 outline-none focus:border-gold transition-all resize-none font-accent text-xs md:text-sm tracking-widest leading-relaxed" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
                 </div>
-                <div className="col-span-2 pt-10">
+                <div className="md:col-span-2 pt-6 md:pt-10">
                   <button 
                     type="submit" 
                     disabled={uploading}
-                    className="w-full btn-luxury flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed py-6"
+                    className="w-full btn-luxury flex items-center justify-center gap-3 md:gap-4 disabled:opacity-50 disabled:cursor-not-allowed py-5 md:py-6"
                   >
                     {uploading ? (
                       <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Save size={20} />
+                      <Save className="w-4.5 h-4.5 md:w-5 md:h-5" />
                     )}
-                    <span className="text-[11px] font-bold uppercase tracking-[0.4em]">
+                    <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.3em] md:tracking-[0.4em]">
                       {uploading ? 'Processing Empire Assets...' : (editingId ? 'Update Masterpiece' : 'Forge New Masterpiece')}
                     </span>
                   </button>
@@ -1010,27 +1037,27 @@ export default function AdminDashboard() {
       {/* Grant Access Modal */}
       <AnimatePresence>
         {isGranting && selectedUserForGrant && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsGranting(false)} className="absolute inset-0 bg-luxury-black/95 backdrop-blur-md" />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-xl luxury-card p-16 border-gold/30">
-              <div className="flex items-center justify-between mb-12">
-                <h2 className="text-3xl font-display">Grant Access</h2>
-                <button onClick={() => setIsGranting(false)} className="p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><X size={20} /></button>
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-xl luxury-card p-8 md:p-16 border-gold/30">
+              <div className="flex items-center justify-between mb-8 md:mb-12">
+                <h2 className="text-2xl md:text-3xl font-display">Grant Access</h2>
+                <button onClick={() => setIsGranting(false)} className="p-2 md:p-3 border border-white/5 hover:border-gold hover:text-gold transition-all"><X className="w-4.5 h-4.5 md:w-5 md:h-5" /></button>
               </div>
-              <p className="text-luxury-accent mb-12 italic font-light">Select a masterpiece to grant access to <span className="text-white font-bold">{selectedUserForGrant.displayName}</span>.</p>
-              <div className="max-h-[500px] overflow-y-auto pr-4 space-y-6 custom-scrollbar">
+              <p className="text-sm md:text-base text-luxury-accent mb-8 md:mb-12 italic font-light">Select a masterpiece to grant access to <span className="text-white font-bold">{selectedUserForGrant.displayName}</span>.</p>
+              <div className="max-h-[60vh] md:max-h-[500px] overflow-y-auto pr-2 md:pr-4 space-y-4 md:space-y-6 custom-scrollbar">
                 {books.map((book) => (
                   <button 
                     key={book.id}
                     onClick={() => { handleGrantAccess(selectedUserForGrant.uid, book.id); setIsGranting(false); }}
-                    className="w-full flex items-center gap-6 p-6 border border-white/5 hover:border-gold/50 transition-all text-left group"
+                    className="w-full flex items-center gap-4 md:gap-6 p-4 md:p-6 border border-white/5 hover:border-gold/50 transition-all text-left group"
                   >
-                    <div className="w-12 h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
+                    <div className="w-10 h-14 md:w-12 md:h-16 border border-white/5 overflow-hidden group-hover:border-gold transition-all">
                       <img src={book.coverImage} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                     </div>
                     <div>
-                      <div className="text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
-                      <div className="text-[9px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
+                      <div className="text-base md:text-lg font-display group-hover:text-gold transition-colors">{book.title}</div>
+                      <div className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-luxury-accent font-accent">{book.author}</div>
                     </div>
                   </button>
                 ))}
