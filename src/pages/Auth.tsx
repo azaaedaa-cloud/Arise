@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   signInWithEmailAndPassword, 
@@ -10,9 +10,11 @@ import {
 import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, User, LogIn, UserPlus, Star, Shield, Zap, Globe, BookOpen } from 'lucide-react';
+import { Mail, Lock, User, LogIn, UserPlus, Shield, Zap, Globe, Crown, ArrowRight } from 'lucide-react';
+import { useAppContext } from '../contexts/AppContext';
 
 export default function Auth() {
+  const { t } = useAppContext();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,96 +60,97 @@ export default function Auth() {
     setLoading(true);
     try {
       await signInWithPopup(auth, provider);
-      // Navigation and profile creation are handled by App.tsx onAuthStateChanged
       navigate('/');
     } catch (err: any) {
       console.error("Google Sign In Error:", err);
-      if (err.code === 'auth/popup-blocked') {
-        setError('The login popup was blocked by your browser. Please allow popups for this site.');
-      } else if (err.code === 'auth/operation-not-allowed') {
-        setError('Google login is not enabled in the Firebase Console. Please enable it under Authentication > Sign-in method.');
-      } else if (err.code === 'auth/unauthorized-domain') {
-        setError('This domain is not authorized for Google login. Please add it to the "Authorized domains" list in the Firebase Console.');
-      } else {
-        setError(err.message);
-      }
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-6 py-20 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen flex items-center justify-center px-6 py-32 relative overflow-hidden bg-luxury-black">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold/5 rounded-full blur-[120px]" />
+      </div>
 
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 glass rounded-[3rem] overflow-hidden border-white/5 shadow-[0_50px_100px_rgba(0,0,0,0.5)]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 luxury-card overflow-hidden min-h-[700px]"
       >
-        {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col justify-between p-16 bg-gradient-to-br from-luxury-gray to-luxury-black relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/texture/1920/1080')] opacity-5 mix-blend-overlay" />
+        {/* Left Side - Brand & Story */}
+        <div className="hidden lg:flex flex-col justify-between p-20 bg-gradient-to-br from-luxury-gray to-luxury-black relative">
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop')] opacity-10 mix-blend-overlay grayscale" />
           
           <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-12">
-              <div className="w-10 h-10 bg-gold rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-                <BookOpen className="text-luxury-black" size={24} />
+            <Link to="/" className="flex items-center gap-4 mb-20 group">
+              <div className="w-12 h-12 border border-gold/30 flex items-center justify-center group-hover:border-gold transition-colors">
+                <Crown className="text-gold" size={24} />
               </div>
-              <span className="text-2xl font-bold tracking-tighter">ARAIZE</span>
-            </div>
+              <span className="text-3xl font-display tracking-[0.2em] text-white">ARAIZE</span>
+            </Link>
             
-            <h2 className="text-5xl font-bold tracking-tighter mb-8 leading-tight">
-              JOIN THE <br />
-              <span className="text-gold">ELITE CIRCLE</span>
+            <h2 className="text-6xl font-display tracking-tight mb-10 leading-[1.1]">
+              THE <span className="gold-text">FOUNDATION</span> <br />
+              OF SUCCESS.
             </h2>
-            <p className="text-luxury-accent text-lg leading-relaxed mb-12">
-              Access the world's most exclusive digital and physical bookstore. Curated for the elite, powered by performance.
+            <p className="text-luxury-accent text-xl font-light leading-relaxed mb-16 italic">
+              "True power lies in knowledge. Join the elite circle of those who rise beyond their limits."
             </p>
 
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 gap-8">
               {[
-                { label: "Elite Access", icon: Shield, color: "text-blue-400" },
-                { label: "Instant Delivery", icon: Zap, color: "text-gold" },
-                { label: "Global Network", icon: Globe, color: "text-emerald-400" },
+                { label: "Elite Access", icon: Shield, desc: "Curated collections for the ambitious." },
+                { label: "Instant Delivery", icon: Zap, desc: "Knowledge at the speed of thought." },
+                { label: "Global Network", icon: Globe, desc: "Connect with the world's finest minds." },
               ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <div className={`w-10 h-10 glass rounded-xl flex items-center justify-center ${feature.color}`}>
+                <div key={i} className="flex items-start gap-6 group">
+                  <div className="w-12 h-12 border border-white/5 flex items-center justify-center text-gold group-hover:border-gold transition-colors">
                     <feature.icon size={20} />
                   </div>
-                  <span className="font-bold tracking-widest text-xs uppercase text-luxury-accent">{feature.label}</span>
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-[0.3em] text-white mb-1 font-accent">{feature.label}</h4>
+                    <p className="text-sm text-luxury-accent font-light">{feature.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative z-10 pt-12 border-t border-white/5 flex items-center gap-4">
-            <div className="flex -space-x-4">
+          <div className="relative z-10 pt-12 border-t border-white/5 flex items-center gap-6">
+            <div className="flex -space-x-3">
               {[1, 2, 3, 4].map(i => (
-                <img key={i} src={`https://i.pravatar.cc/150?u=${i}`} className="w-10 h-10 rounded-full border-2 border-luxury-black" />
+                <img key={i} src={`https://i.pravatar.cc/150?u=${i + 10}`} className="w-10 h-10 rounded-full border-2 border-luxury-black grayscale hover:grayscale-0 transition-all cursor-pointer" />
               ))}
             </div>
-            <div className="text-xs text-luxury-accent">
-              <span className="text-white font-bold">50,000+</span> elite readers <br /> already joined.
+            <div className="text-[10px] uppercase tracking-[0.2em] text-luxury-accent font-accent">
+              <span className="text-white font-bold">50,000+</span> Elite Members
             </div>
           </div>
         </div>
 
-        {/* Right Side - Form */}
-        <div className="p-8 md:p-16 flex flex-col justify-center">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h3>
-            <p className="text-luxury-accent">{isLogin ? 'Enter your elite credentials' : 'Join the elite reading circle'}</p>
+        {/* Right Side - Auth Form */}
+        <div className="p-12 md:p-20 flex flex-col justify-center bg-luxury-black/40">
+          <div className="mb-16">
+            <h3 className="text-4xl font-display mb-4">{isLogin ? 'Sign In' : 'Create Account'}</h3>
+            <p className="text-luxury-accent font-light italic">{isLogin ? 'Welcome back to the elite circle.' : 'Begin your journey to sovereignty.'}</p>
           </div>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-sm mb-8 text-center">
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/5 border border-red-500/20 text-red-500 p-6 mb-10 text-sm font-light italic"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
-          <form onSubmit={handleAuth} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-8">
             <AnimatePresence mode="wait">
               {!isLogin && (
                 <motion.div 
@@ -156,11 +159,11 @@ export default function Auth() {
                   exit={{ opacity: 0, height: 0 }}
                   className="relative"
                 >
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={18} />
+                  <User className="absolute left-0 top-1/2 -translate-y-1/2 text-gold/50" size={18} />
                   <input 
                     type="text" 
-                    placeholder="Full Name" 
-                    className="w-full pl-12 pr-6 py-4 rounded-xl glass border-white/10 focus:border-gold outline-none transition-all"
+                    placeholder="FULL NAME" 
+                    className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-gold outline-none transition-all text-sm tracking-widest uppercase font-accent"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     required={!isLogin}
@@ -170,11 +173,11 @@ export default function Auth() {
             </AnimatePresence>
 
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={18} />
+              <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-gold/50" size={18} />
               <input 
                 type="email" 
-                placeholder="Elite Email" 
-                className="w-full pl-12 pr-6 py-4 rounded-xl glass border-white/10 focus:border-gold outline-none transition-all"
+                placeholder="ELITE EMAIL" 
+                className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-gold outline-none transition-all text-sm tracking-widest uppercase font-accent"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -182,11 +185,11 @@ export default function Auth() {
             </div>
 
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-luxury-accent" size={18} />
+              <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-gold/50" size={18} />
               <input 
                 type="password" 
-                placeholder="Secure Password" 
-                className="w-full pl-12 pr-6 py-4 rounded-xl glass border-white/10 focus:border-gold outline-none transition-all"
+                placeholder="SECURE PASSWORD" 
+                className="w-full pl-10 pr-4 py-4 bg-transparent border-b border-white/10 focus:border-gold outline-none transition-all text-sm tracking-widest uppercase font-accent"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -196,45 +199,44 @@ export default function Auth() {
             <button 
               type="submit" 
               disabled={loading}
-              className="btn-gold w-full py-4 flex items-center justify-center gap-2"
+              className="btn-luxury w-full py-5 flex items-center justify-center gap-4 group"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-luxury-black border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  {isLogin ? <LogIn size={20} /> : <UserPlus size={20} />}
-                  {isLogin ? 'Sign In' : 'Create Account'}
+                  <span className="text-[11px] font-bold uppercase tracking-[0.4em]">{isLogin ? 'Sign In' : 'Create Account'}</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                 </>
               )}
             </button>
           </form>
 
-          <div className="relative my-10">
+          <div className="relative my-16">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/5"></div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-luxury-black px-4 text-luxury-accent tracking-widest">Or continue with</span>
+            <div className="relative flex justify-center">
+              <span className="bg-luxury-black px-6 text-[10px] uppercase tracking-[0.3em] text-luxury-accent font-accent">Or continue with</span>
             </div>
           </div>
 
           <button 
             onClick={handleGoogleSignIn}
-            className="w-full py-4 glass rounded-xl border-white/10 hover:bg-white/5 transition-all flex items-center justify-center gap-3 font-bold"
+            className="w-full py-5 border border-white/5 hover:border-gold/30 transition-all flex items-center justify-center gap-4 group"
           >
-            <img src="https://www.google.com/favicon.ico" className="w-5 h-5" />
-            Google Login
+            <img src="https://www.google.com/favicon.ico" className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.3em] text-luxury-accent group-hover:text-white transition-colors font-accent">Google Login</span>
           </button>
 
-          <p className="text-center mt-10 text-luxury-accent">
-            {isLogin ? "Don't have an elite account?" : "Already have an account?"}
+          <div className="text-center mt-16">
             <button 
               onClick={() => setIsLogin(!isLogin)}
-              className="text-gold font-bold ml-2 hover:underline"
+              className="text-[10px] uppercase tracking-[0.3em] text-luxury-accent hover:text-gold transition-colors font-accent"
             >
-              {isLogin ? 'Create one now' : 'Sign in here'}
+              {isLogin ? "Don't have an account? Create one" : "Already have an account? Sign in"}
             </button>
-          </p>
+          </div>
         </div>
       </motion.div>
     </div>

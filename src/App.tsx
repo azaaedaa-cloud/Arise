@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ShoppingCart, Heart, User as UserIcon, Search, Menu, X, BookOpen, LogOut, LayoutDashboard, Sun, Moon, Languages } from 'lucide-react';
+import { ShoppingCart, Heart, User as UserIcon, Search, Menu, X, BookOpen, LogOut, LayoutDashboard, Sun, Moon, Languages, Crown } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster } from 'react-hot-toast';
 import { UserProfile } from './types';
@@ -42,6 +42,8 @@ const ProtectedRoute = ({ children, role }: { children: React.ReactNode, role?: 
     });
     return () => unsubscribe();
   }, []);
+
+  const { t } = useAppContext();
 
   if (loading) {
     return (
@@ -123,70 +125,67 @@ export default function App() {
           },
         }} />
         {/* Navigation */}
-        <nav className="glass sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 group">
-            <img src="/logo.png" alt="ARAIZE" className="h-10 w-auto transition-transform group-hover:scale-105" />
-          </Link>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/catalog" className="hover:text-gold transition-colors font-medium">{t('nav.catalog')}</Link>
-            <Link to="/wishlist" className="hover:text-gold transition-colors font-medium">{t('nav.wishlist')}</Link>
-            <div className="relative group">
-              <Search className="text-luxury-accent cursor-pointer hover:text-gold transition-colors" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Theme Toggle */}
-            <button 
-              onClick={toggleTheme}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
-
-            {/* Language Toggle */}
-            <button 
-              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-              className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold flex items-center gap-1"
-              title={language === 'en' ? 'Switch to Arabic' : 'Switch to English'}
-            >
-              <Languages size={20} />
-              <span className="text-xs font-bold uppercase">{language === 'en' ? 'AR' : 'EN'}</span>
-            </button>
-
-            <Link to="/cart" className="relative p-2 hover:bg-white/10 rounded-full transition-colors">
-              <ShoppingCart size={22} />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gold text-luxury-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-            
-            {user ? (
-              <div className="flex items-center gap-4">
-                {(profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'editor' || profile?.role === 'support') && (
-                  <Link to="/admin" className="p-2 hover:bg-white/10 rounded-full transition-colors text-gold">
-                    <LayoutDashboard size={22} />
-                  </Link>
-                )}
-                <Link to="/profile" className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                  <UserIcon size={22} />
-                </Link>
-                <button onClick={() => signOut(auth)} className="p-2 hover:bg-white/10 rounded-full transition-colors text-red-500">
-                  <LogOut size={22} />
-                </button>
+        <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-500 bg-luxury-black/80 backdrop-blur-xl border-b border-white/5">
+          <div className="container mx-auto flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 border border-gold/30 flex items-center justify-center group-hover:border-gold transition-colors">
+                <Crown className="text-gold" size={20} />
               </div>
-            ) : (
-              <Link to="/auth" className="btn-gold py-2 px-4 text-sm">Sign In</Link>
-            )}
-            
-            <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X /> : <Menu />}
-            </button>
+              <span className="text-2xl font-display tracking-[0.2em] text-white group-hover:text-gold transition-colors">ARAIZE</span>
+            </Link>
+
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-12">
+              <Link to="/catalog" className="text-[11px] font-bold uppercase tracking-[0.3em] text-luxury-accent hover:text-gold transition-colors font-accent">{t('nav.catalog')}</Link>
+              <Link to="/wishlist" className="text-[11px] font-bold uppercase tracking-[0.3em] text-luxury-accent hover:text-gold transition-colors font-accent">{t('nav.wishlist')}</Link>
+              <div className="relative group">
+                <Search className="text-luxury-accent cursor-pointer hover:text-gold transition-colors" size={18} />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6">
+              {/* Language Toggle */}
+              <button 
+                onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+                className="text-[10px] font-bold uppercase tracking-widest text-gold hover:text-gold-light transition-colors flex items-center gap-2 font-accent"
+              >
+                <Languages size={16} />
+                <span>{language === 'en' ? 'AR' : 'EN'}</span>
+              </button>
+
+              <Link to="/cart" className="relative text-luxury-accent hover:text-gold transition-colors">
+                <ShoppingCart size={20} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-gold text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+              
+              {user ? (
+                <div className="flex items-center gap-6">
+                  {(profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'editor' || profile?.role === 'support') && (
+                    <Link to="/admin" className="text-gold hover:text-gold-light transition-colors">
+                      <LayoutDashboard size={20} />
+                    </Link>
+                  )}
+                  <Link to="/profile" className="text-luxury-accent hover:text-gold transition-colors">
+                    <UserIcon size={20} />
+                  </Link>
+                  <button onClick={() => signOut(auth)} className="text-red-500/70 hover:text-red-500 transition-colors">
+                    <LogOut size={20} />
+                  </button>
+                </div>
+              ) : (
+                <Link to="/auth" className="text-[11px] font-bold uppercase tracking-[0.3em] text-gold hover:text-gold-light transition-colors font-accent">
+                  {t('nav.signin')}
+                </Link>
+              )}
+              
+              <button className="md:hidden text-gold" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -194,21 +193,24 @@ export default function App() {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="md:hidden glass absolute top-20 left-0 w-full p-6 z-40 flex flex-col gap-4"
+              initial={{ opacity: 0, x: '100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: '100%' }}
+              className="md:hidden fixed inset-0 bg-luxury-black z-[60] p-12 flex flex-col items-center justify-center gap-12"
             >
-              <Link to="/catalog" onClick={() => setIsMenuOpen(false)}>{t('nav.catalog')}</Link>
-              <Link to="/wishlist" onClick={() => setIsMenuOpen(false)}>{t('nav.wishlist')}</Link>
-              <Link to="/cart" onClick={() => setIsMenuOpen(false)}>{t('nav.cart')}</Link>
+              <button className="absolute top-8 right-8 text-gold" onClick={() => setIsMenuOpen(false)}>
+                <X size={32} />
+              </button>
+              <Link to="/catalog" className="text-3xl font-display" onClick={() => setIsMenuOpen(false)}>{t('nav.catalog')}</Link>
+              <Link to="/wishlist" className="text-3xl font-display" onClick={() => setIsMenuOpen(false)}>{t('nav.wishlist')}</Link>
+              <Link to="/cart" className="text-3xl font-display" onClick={() => setIsMenuOpen(false)}>{t('nav.cart')}</Link>
               {user ? (
                 <>
-                  <Link to="/profile" onClick={() => setIsMenuOpen(false)}>{t('nav.profile')}</Link>
-                  <button onClick={() => signOut(auth)} className="text-left text-red-500">{t('nav.signout')}</button>
+                  <Link to="/profile" className="text-3xl font-display" onClick={() => setIsMenuOpen(false)}>{t('nav.profile')}</Link>
+                  <button onClick={() => signOut(auth)} className="text-3xl font-display text-red-500">{t('nav.signout')}</button>
                 </>
               ) : (
-                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>{t('nav.signin')}</Link>
+                <Link to="/auth" className="text-3xl font-display text-gold" onClick={() => setIsMenuOpen(false)}>{t('nav.signin')}</Link>
               )}
             </motion.div>
           )}
@@ -233,53 +235,64 @@ export default function App() {
         </main>
 
         {/* Footer */}
-        <footer className="bg-luxury-gray border-t border-white/5 py-12 px-6 mt-20">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-2 mb-6">
-                <img src="/logo.png" alt="ARAIZE" className="h-8 w-auto" />
+        <footer className="bg-luxury-black border-t border-white/5 py-32 px-6">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-20 mb-24">
+              <div className="md:col-span-5">
+                <Link to="/" className="flex items-center gap-3 mb-10 group">
+                  <div className="w-12 h-12 border border-gold/30 flex items-center justify-center group-hover:border-gold transition-colors">
+                    <Crown className="text-gold" size={24} />
+                  </div>
+                  <span className="text-3xl font-display tracking-[0.2em] text-white">ARAIZE</span>
+                </Link>
+                <p className="text-luxury-accent font-light leading-relaxed max-w-md text-lg italic">
+                  "{t('footer.description')}"
+                </p>
               </div>
-              <p className="text-luxury-accent max-w-md leading-relaxed">
-                {t('footer.description')}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-bold mb-6 text-gold">{t('footer.explore')}</h4>
-              <ul className="space-y-4 text-luxury-accent">
-                <li><Link to="/catalog" className="hover:text-white transition-colors">{t('nav.catalog')}</Link></li>
-                <li><Link to="/catalog?category=Digital" className="hover:text-white transition-colors">{t('footer.digital')}</Link></li>
-                <li><Link to="/catalog?category=Limited" className="hover:text-white transition-colors">{t('footer.limited')}</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-6 text-gold">{t('footer.support')}</h4>
-              <ul className="space-y-4 text-luxury-accent">
-                <li><a href="#" className="hover:text-white transition-colors">{t('footer.contact')}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t('footer.shipping')}</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">{t('footer.terms')}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-6 text-gold">Follow Us</h4>
-              <ul className="space-y-4 text-luxury-accent">
-                <li>
-                  <a 
-                    href="https://www.facebook.com/profile.php?id=61579690449201" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="hover:text-white transition-colors flex items-center gap-2"
-                  >
+              
+              <div className="md:col-span-2">
+                <h4 className="text-[11px] font-bold mb-10 text-gold uppercase tracking-[0.3em] font-accent">{t('footer.explore')}</h4>
+                <ul className="space-y-6 text-sm font-light tracking-widest uppercase">
+                  <li><Link to="/catalog" className="text-luxury-accent hover:text-white transition-colors">{t('nav.catalog')}</Link></li>
+                  <li><Link to="/catalog?category=Digital" className="text-luxury-accent hover:text-white transition-colors">{t('footer.digital')}</Link></li>
+                  <li><Link to="/catalog?category=Limited" className="text-luxury-accent hover:text-white transition-colors">{t('footer.limited')}</Link></li>
+                </ul>
+              </div>
+
+              <div className="md:col-span-2">
+                <h4 className="text-[11px] font-bold mb-10 text-gold uppercase tracking-[0.3em] font-accent">{t('footer.support')}</h4>
+                <ul className="space-y-6 text-sm font-light tracking-widest uppercase">
+                  <li><a href="#" className="text-luxury-accent hover:text-white transition-colors">{t('footer.contact')}</a></li>
+                  <li><a href="#" className="text-luxury-accent hover:text-white transition-colors">{t('footer.shipping')}</a></li>
+                  <li><a href="#" className="text-luxury-accent hover:text-white transition-colors">{t('footer.terms')}</a></li>
+                </ul>
+              </div>
+
+              <div className="md:col-span-3">
+                <h4 className="text-[11px] font-bold mb-10 text-gold uppercase tracking-[0.3em] font-accent">Connect</h4>
+                <a 
+                  href="https://www.facebook.com/profile.php?id=61579690449201" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="group flex items-center gap-4 text-luxury-accent hover:text-white transition-all"
+                >
+                  <div className="w-12 h-12 border border-white/10 flex items-center justify-center group-hover:border-gold transition-colors">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
                     </svg>
-                    Facebook
-                  </a>
-                </li>
-              </ul>
+                  </div>
+                  <span className="text-sm font-light tracking-widest uppercase">Facebook</span>
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-white/5 text-center text-luxury-accent text-sm">
-            © 2026 Araize Platform. {t('footer.rights')}
+            
+            <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 text-luxury-accent text-[10px] uppercase tracking-[0.4em] font-accent">
+              <div>© 2026 Araize Elite Platform</div>
+              <div className="flex gap-12">
+                <a href="#" className="hover:text-gold transition-colors">Privacy Policy</a>
+                <a href="#" className="hover:text-gold transition-colors">Terms of Service</a>
+              </div>
+            </div>
           </div>
         </footer>
       </div>
